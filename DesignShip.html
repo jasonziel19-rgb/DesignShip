@@ -1,0 +1,1135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
+<title>DesignShip</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: drafting-table app. Sticky title bar, four hash views. Studio = model viewport + drawing title block on the left, step panel on the right. */
+:root{
+  --bg:#ECEFF3; --surface:#F7F8FA; --panel:#FFFFFF; --well:#E2E7EE; --grid:rgba(31,63,160,.08);
+  --ink:#12161C; --muted:#586272; --line:#D3DAE3; --line-strong:#AEB9C7;
+  --accent:#1F3FA0; --accent-ink:#FFFFFF; --accent-soft:#DFE6F8;
+  --ok:#1D7A4A; --ok-soft:#DCF0E3; --warn:#9A5800; --warn-soft:#FAEBCF; --bad:#B42318; --bad-soft:#FADFDB;
+  --c1:#1F3FA0; --c2:#0E8486; --c3:#C2410C; --c4:#7A3EB1;
+  --scrim:rgba(10,14,20,.55); --shadow:0 18px 50px rgba(18,22,28,.18);
+  --display:"Archivo","Arial Narrow",Arial,sans-serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  --r:6px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E1217; --surface:#141920; --panel:#1A2029; --well:#212834; --grid:rgba(125,155,255,.07);
+  --ink:#E6EBF2; --muted:#98A3B2; --line:#2A323E; --line-strong:#465263;
+  --accent:#8AA4FF; --accent-ink:#0B1020; --accent-soft:#1F2A4C;
+  --ok:#52C78E; --ok-soft:#173527; --warn:#F2B451; --warn-soft:#3A2B12; --bad:#FF8070; --bad-soft:#3D1D1A;
+  --c1:#8AA4FF; --c2:#3CC6C8; --c3:#FB8A4D; --c4:#C29AF0;
+  --scrim:rgba(0,0,0,.65); --shadow:0 18px 50px rgba(0,0,0,.5);
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1217; --surface:#141920; --panel:#1A2029; --well:#212834; --grid:rgba(125,155,255,.07);
+  --ink:#E6EBF2; --muted:#98A3B2; --line:#2A323E; --line-strong:#465263;
+  --accent:#8AA4FF; --accent-ink:#0B1020; --accent-soft:#1F2A4C;
+  --ok:#52C78E; --ok-soft:#173527; --warn:#F2B451; --warn-soft:#3A2B12; --bad:#FF8070; --bad-soft:#3D1D1A;
+  --c1:#8AA4FF; --c2:#3CC6C8; --c3:#FB8A4D; --c4:#C29AF0;
+  --scrim:rgba(0,0,0,.65); --shadow:0 18px 50px rgba(0,0,0,.5);
+  color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font:15px/1.55 var(--body);-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--surface)}
+a{color:var(--accent)}
+h1,h2,h3{margin:0;text-wrap:balance}
+p{margin:0}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.wrap{max-width:1220px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.eyebrow{font:600 12px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.hint{font-size:13px;color:var(--muted)}
+.fine{font-size:12.5px;color:var(--muted);line-height:1.5}
+
+/* top bar */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface);border-bottom:1px solid var(--line)}
+.top-in{display:flex;align-items:center;gap:18px;height:58px}
+.brand{display:flex;align-items:center;gap:9px;text-decoration:none;color:var(--ink);font:760 19px/1 var(--display);font-stretch:118%;letter-spacing:-.01em;flex:none}
+.brand svg{color:var(--accent)}
+.nav{display:flex;gap:2px;overflow-x:auto;flex:1;min-width:0;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav a{padding:8px 12px;border-radius:var(--r);color:var(--muted);text-decoration:none;font-weight:500;white-space:nowrap;font-size:14px}
+.nav a:hover{color:var(--ink);background:var(--well)}
+.nav a[aria-current="page"]{color:var(--accent);background:var(--accent-soft)}
+.demo-chip{flex:none;font:500 12px/1 var(--mono);color:var(--muted);background:transparent;border:1px dashed var(--line-strong);border-radius:20px;padding:7px 11px;cursor:pointer}
+.demo-chip:hover{color:var(--ink);border-color:var(--ink)}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:0 16px;border-radius:var(--r);border:1px solid var(--line-strong);background:var(--panel);color:var(--ink);font:600 14px/1 var(--body);text-decoration:none;cursor:pointer;white-space:nowrap}
+.btn:hover{border-color:var(--ink)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.1)}
+.btn.ghost{border-color:transparent;background:transparent;color:var(--accent);padding:0 8px}
+.btn.sm{min-height:32px;padding:0 11px;font-size:13px}
+.btn:disabled{opacity:.45;cursor:not-allowed;filter:none}
+.seg{display:inline-flex;background:var(--well);border-radius:8px;padding:3px;gap:2px;flex-wrap:wrap}
+.seg button{border:0;background:transparent;color:var(--muted);font:600 13px/1 var(--body);padding:9px 12px;border-radius:6px;cursor:pointer}
+.seg button[aria-pressed="true"],.seg button[aria-selected="true"]{background:var(--panel);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+
+input[type=text],input[type=number],input[type=search],select,textarea{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line-strong);border-radius:var(--r);padding:9px 11px;width:100%}
+textarea{resize:vertical;line-height:1.5}
+input[type=range]{accent-color:var(--accent);width:100%}
+input[type=checkbox],input[type=radio]{accent-color:var(--accent)}
+label{font-weight:500}
+
+/* views */
+.view{min-height:60vh}
+
+/* HOME */
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);gap:44px;align-items:center;padding-block:52px 44px}
+.hero-copy{display:flex;flex-direction:column;gap:20px}
+.display{font:820 clamp(46px,7.2vw,82px)/.92 var(--display);font-stretch:125%;letter-spacing:-.03em}
+.display span{display:block}
+.display span:nth-child(2){color:var(--accent)}
+.lede{font-size:17px;color:var(--muted);max-width:50ch}
+.cta{display:flex;gap:10px;flex-wrap:wrap}
+.hero-demo{background:var(--panel);border:1.5px solid var(--ink);border-radius:4px;overflow:hidden}
+.hero-prompt{padding:14px 16px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center}
+.hero-prompt p{font-size:15px}
+.lbl{font:600 10.5px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.hero-meta{padding:10px 16px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted)}
+.viewport{position:relative;background-color:var(--well);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:22px 22px;height:420px;overflow:hidden}
+#vp canvas{touch-action:none}
+.viewport canvas{position:absolute;inset:0;display:block;width:100%!important;height:100%!important}
+.hero-demo .viewport{height:330px}
+.glyph-big{position:absolute;inset:0;display:grid;place-items:center;color:var(--muted)}
+.glyph-big svg{width:50%;max-width:260px}
+
+.section{padding-block:36px}
+.section h2{font:760 26px/1.15 var(--display);font-stretch:112%;letter-spacing:-.01em;margin-bottom:22px}
+.steps5{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));border-top:2px solid var(--ink)}
+.steps5 li{padding:16px 18px 6px 0;display:flex;flex-direction:column;gap:6px}
+.steps5 li+li{padding-left:18px;border-left:1px solid var(--line)}
+.steps5 .n{font:600 12px var(--mono);color:var(--accent)}
+.steps5 h3{font:700 17px/1.2 var(--display);font-stretch:110%}
+.steps5 p{font-size:14px;color:var(--muted)}
+.two{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:40px;align-items:start}
+.aud{display:flex;flex-direction:column;border-top:2px solid var(--ink)}
+.aud-row{display:grid;grid-template-columns:minmax(0,170px) minmax(0,1fr) auto;gap:16px;align-items:center;padding:16px 0;border-bottom:1px solid var(--line)}
+.aud-row h3{font:700 17px/1.2 var(--display);font-stretch:110%}
+.aud-row p{font-size:14px;color:var(--muted)}
+.money{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:14px}
+.money h3{font:700 17px/1.25 var(--display);font-stretch:110%}
+
+/* split bar */
+.split{display:flex;height:14px;border-radius:3px;overflow:hidden;gap:2px}
+.split i{display:block;min-width:3px}
+.split-legend{display:grid;gap:6px;margin:0}
+.split-legend div{display:flex;justify-content:space-between;gap:12px;font-size:14px}
+.split-legend dt{display:flex;align-items:center;gap:8px;color:var(--muted)}
+.split-legend dd{margin:0;font-family:var(--mono);font-variant-numeric:tabular-nums}
+.sw{width:10px;height:10px;border-radius:2px;flex:none}
+
+/* STUDIO */
+.stepbar{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;padding-block:20px 16px}
+.stepbar button{display:flex;flex-direction:column;align-items:flex-start;gap:3px;padding:10px 12px 11px;border:1px solid var(--line);background:var(--panel);border-radius:var(--r);text-align:left;cursor:pointer;color:var(--ink);font:600 14px/1.2 var(--body);min-width:0}
+.stepbar button:hover{border-color:var(--line-strong)}
+.stepbar .sn{font:500 11px/1 var(--mono);color:var(--muted);letter-spacing:.04em}
+.stepbar .ss{font:400 12px/1.2 var(--body);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.stepbar .ss.good{color:var(--ok)} .stepbar .ss.bad{color:var(--bad)} .stepbar .ss.mid{color:var(--warn)}
+.stepbar button[aria-selected="true"]{border-color:var(--accent);box-shadow:inset 0 -3px 0 var(--accent)}
+.studio-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:20px;align-items:start;padding-bottom:56px}
+.stage{position:sticky;top:calc(env(safe-area-inset-top,0px) + 74px)}
+.stage .viewport{border:1.5px solid var(--ink);border-bottom:none;border-radius:4px 4px 0 0}
+.hud{position:absolute;left:12px;top:10px;right:12px;display:flex;justify-content:space-between;gap:8px;z-index:2;pointer-events:none;font:500 11px/1.3 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.vp-btn{position:absolute;right:10px;bottom:10px;z-index:2}
+.tblock{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:1.5px solid var(--ink);border-radius:0 0 4px 4px;background:var(--panel);overflow:hidden}
+.tblock>div{padding:6px 10px 7px;border-top:1px solid var(--line-strong);border-left:1px solid var(--line-strong);margin:-1px 0 0 -1px;min-width:0}
+.tblock .w2{grid-column:span 2}
+.tblock span{display:block;font:500 9.5px/1.3 var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.tblock b{display:block;font:500 13px/1.4 var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tblock b.fp-none{color:var(--muted);font-weight:400}
+
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:22px;display:flex;flex-direction:column;gap:18px;min-width:0}
+.ph{display:flex;flex-direction:column;gap:6px}
+.ph h2{font:760 23px/1.15 var(--display);font-stretch:112%;letter-spacing:-.01em}
+.ph p{color:var(--muted);font-size:14px}
+.panel h3{font:600 12px/1 var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.field{display:flex;flex-direction:column;gap:6px}
+.examples{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line-strong);background:transparent;color:var(--ink);border-radius:20px;padding:6px 11px;font:500 12.5px/1.2 var(--body);cursor:pointer}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.ailog{list-style:none;margin:0;padding:12px 14px;background:var(--well);border-radius:var(--r);font:13px/1.65 var(--mono);display:flex;flex-direction:column;gap:2px}
+.ailog li{display:flex;gap:8px}
+.ailog li::before{content:"›";color:var(--accent)}
+.ailog:empty{display:none}
+.params{display:flex;flex-direction:column}
+.prm{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;align-items:center;padding:11px 0;border-top:1px solid var(--line)}
+.prm label{font-size:14px}
+.prm .numw{display:flex;align-items:center;gap:6px}
+.prm input[type=number]{width:76px;padding:6px 8px;font-family:var(--mono);font-size:13px;text-align:right}
+.prm .u{font:12px var(--mono);color:var(--muted);width:20px}
+.prm input[type=range]{grid-column:1/-1}
+.drop{position:relative;display:flex;flex-direction:column;align-items:center;gap:8px;padding:28px 16px;border:1.5px dashed var(--line-strong);border-radius:8px;text-align:center;cursor:pointer;background:var(--surface)}
+.drop:hover,.drop.over{border-color:var(--accent);background:var(--accent-soft)}
+.drop input{position:absolute;width:1px;height:1px;opacity:0}
+.drop b{font-size:15px}
+.msg{padding:12px 14px;border-radius:var(--r);font-size:14px;background:var(--well)}
+.msg.ok{background:var(--ok-soft);color:var(--ink)} .msg.warn{background:var(--warn-soft)} .msg.bad{background:var(--bad-soft)}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.stats div{background:var(--panel);padding:10px 12px}
+.stats b{display:block;font:500 15px var(--mono)}
+.navbtns{display:flex;justify-content:space-between;gap:10px;padding-top:4px;flex-wrap:wrap}
+
+.verdict{display:flex;gap:12px;align-items:flex-start;padding:14px;border-radius:8px}
+.verdict.good{background:var(--ok-soft)} .verdict.mid{background:var(--warn-soft)} .verdict.bad{background:var(--bad-soft)} .verdict.info{background:var(--accent-soft)}
+.verdict b{display:block;font-size:15px;margin-bottom:2px}
+.verdict p{font-size:14px}
+.vicon{flex:none;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font:700 13px/1 var(--mono);color:var(--panel)}
+.good .vicon{background:var(--ok)} .mid .vicon{background:var(--warn)} .bad .vicon{background:var(--bad)} .info .vicon{background:var(--accent)}
+
+.checks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.ck{display:grid;grid-template-columns:62px minmax(0,1fr);gap:4px 12px;padding:12px 0;border-top:1px solid var(--line)}
+.ck b{font-size:14px}
+.ck p{font-size:13.5px;color:var(--muted)}
+.ck .btn{grid-column:2;justify-self:start;margin-top:6px}
+.pill{display:inline-block;font:600 10.5px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:5px 6px;border-radius:4px;text-align:center;align-self:start}
+.pill.pass{background:var(--ok-soft);color:var(--ok)} .pill.warn{background:var(--warn-soft);color:var(--warn)} .pill.fail{background:var(--bad-soft);color:var(--bad)} .pill.info{background:var(--well);color:var(--muted)}
+
+.fpcard{display:flex;flex-direction:column;gap:6px;padding:16px;border:1.5px solid var(--ink);border-radius:4px;background:var(--surface)}
+.fpid{font-size:22px;letter-spacing:.04em}
+.scan{display:flex;flex-direction:column;gap:8px}
+.bar{height:6px;background:var(--well);border-radius:3px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);width:0;transition:width .9s linear}
+.matches{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.match{display:grid;grid-template-columns:64px minmax(0,1fr) 54px;gap:12px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.mthumb{width:64px;height:48px;border-radius:4px;background:var(--well);display:grid;place-items:center;overflow:hidden;color:var(--muted)}
+.mthumb img{width:100%;height:100%;object-fit:contain}
+.mthumb svg{width:44px}
+.match b{font-size:14px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.match .bar{margin-top:6px}
+.match .pct{font:600 14px var(--mono);text-align:right}
+
+.qtyrow{display:grid;grid-template-columns:auto 100px minmax(0,1fr);gap:12px;align-items:center}
+.qtyrow input[type=number]{font-family:var(--mono)}
+.procs{display:flex;flex-direction:column;gap:6px}
+.proc{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:11px 13px;border:1px solid var(--line);border-radius:var(--r);cursor:pointer}
+.proc:hover{border-color:var(--line-strong)}
+.proc.sel{border-color:var(--accent);background:var(--accent-soft)}
+.proc.off{opacity:.55;cursor:not-allowed}
+.proc .pn{display:flex;flex-direction:column;gap:2px;font-weight:600;font-size:14px;min-width:0}
+.proc small{font-weight:400;font-size:12.5px;color:var(--muted)}
+.proc .pp{display:flex;flex-direction:column;align-items:flex-end;font:600 15px var(--mono)}
+.proc .tag{grid-column:2/-1;justify-self:start;font:600 10.5px/1 var(--mono);letter-spacing:.05em;text-transform:uppercase;padding:4px 6px;border-radius:4px;background:var(--ok-soft);color:var(--ok)}
+.proc .tag.bad{background:var(--bad-soft);color:var(--bad)}
+.qfig{margin:0;display:flex;flex-direction:column;gap:8px}
+.qfig figcaption{font:600 12px/1 var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.chart-wrap{overflow-x:auto}
+.chart-wrap svg{display:block;width:100%;min-width:320px;height:auto}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:14px;height:3px;border-radius:2px;display:inline-block}
+.ziprow{display:grid;grid-template-columns:auto 110px minmax(0,1fr);gap:12px;align-items:center}
+.sum{border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.sum table{width:100%;border-collapse:collapse;font-size:14px}
+.sum td{padding:9px 14px;border-top:1px solid var(--line)}
+.sum tr:first-child td{border-top:none}
+.sum td:last-child{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
+.sum tr.tot td{font-weight:700;font-size:15px;background:var(--surface)}
+.sum .act{padding:14px;display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--line)}
+
+.order{border:1px solid var(--line);border-radius:8px;padding:14px;display:flex;flex-direction:column;gap:12px;background:var(--panel)}
+.order-h{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline}
+.order-h b{font-size:15px}
+.tl{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px}
+.tl li{display:flex;flex-direction:column;gap:6px;font-size:11.5px;color:var(--muted);line-height:1.25}
+.tl li::before{content:"";height:4px;border-radius:2px;background:var(--well)}
+.tl li.done::before{background:var(--accent)}
+.tl li.now{color:var(--ink);font-weight:600}
+.tl li.now::before{background:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+
+.form{display:flex;flex-direction:column;gap:14px}
+.money-in{display:flex;align-items:center;border:1px solid var(--line-strong);border-radius:var(--r);background:var(--panel);overflow:hidden}
+.money-in span{padding:0 10px;color:var(--muted);font-family:var(--mono)}
+.money-in input{border:0;border-radius:0;font-family:var(--mono)}
+fieldset{border:1px solid var(--line);border-radius:8px;padding:10px 14px 12px;margin:0;display:flex;flex-direction:column;gap:6px}
+legend{font-weight:600;font-size:14px;padding:0 4px}
+.chk{display:flex;gap:10px;align-items:flex-start;font-weight:400;font-size:14px;cursor:pointer}
+.chk input{margin-top:4px}
+.chk small{color:var(--muted);font-family:var(--mono);font-size:12px}
+
+/* MARKET */
+.page-head{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;padding-block:30px 18px}
+.page-head h1{font:800 40px/1 var(--display);font-stretch:120%;letter-spacing:-.02em}
+.page-head .sub{color:var(--muted);margin-top:8px;max-width:58ch}
+.mk-tools{display:flex;gap:8px;flex-wrap:wrap}
+.mk-tools input{width:260px;max-width:100%}
+.mk-tools select{width:auto}
+.cats{display:flex;gap:6px;flex-wrap:wrap;padding-bottom:18px}
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:16px;padding-bottom:56px}
+.card{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;transition:border-color .15s,transform .15s}
+.card:hover{border-color:var(--line-strong);transform:translateY(-2px)}
+.card.hl{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.card-hit{position:absolute;inset:0;z-index:1;background:transparent;border:0;cursor:pointer;border-radius:10px}
+.thumb{aspect-ratio:4/3;max-width:100%;background-color:var(--well);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:16px 16px;display:grid;place-items:center;color:var(--muted)}
+.thumb img{width:100%;height:100%;object-fit:contain}
+.thumb svg{width:55%}
+.cb{padding:12px 14px 14px;display:flex;flex-direction:column;gap:6px;flex:1}
+.cb h3{font:600 15px/1.3 var(--body)}
+.by{font-size:13px;color:var(--muted)}
+.badges{display:flex;gap:5px;flex-wrap:wrap;min-height:20px}
+.badge{font:500 10.5px/1 var(--mono);letter-spacing:.03em;padding:5px 6px;border-radius:4px;background:var(--well);color:var(--muted)}
+.badge.acc{background:var(--accent-soft);color:var(--accent)}
+.cb .row{display:flex;justify-content:space-between;align-items:center;margin-top:auto;padding-top:6px}
+.price{font:600 17px var(--mono);font-variant-numeric:tabular-nums}
+.like{position:relative;z-index:2;display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:20px;padding:5px 10px;font:500 13px var(--mono);cursor:pointer}
+.like svg{width:14px;height:14px}
+.like[aria-pressed="true"]{color:var(--bad);border-color:var(--bad)}
+.like[aria-pressed="true"] svg{fill:currentColor}
+.prog{display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--muted)}
+.empty{grid-column:1/-1;padding:40px;text-align:center;color:var(--muted);border:1px dashed var(--line-strong);border-radius:10px}
+
+/* modal */
+.modal-back{position:fixed;inset:0;background:var(--scrim);z-index:50;display:grid;place-items:center;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.modal{background:var(--panel);border-radius:12px;max-width:960px;width:100%;max-height:100%;overflow:auto;position:relative;box-shadow:var(--shadow)}
+.m-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.m-img{background-color:var(--well);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:20px 20px;display:grid;place-items:center;min-height:300px;color:var(--muted)}
+.m-img img{width:100%;height:auto;max-width:100%}
+.m-img svg{width:50%}
+.m-body{padding:26px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.m-body h2{font:760 26px/1.1 var(--display);font-stretch:112%}
+.m-body h3{font:600 12px/1 var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.spec{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 16px;margin:0;font-size:14px}
+.spec dt{color:var(--muted)}
+.spec dd{margin:0;font-family:var(--mono);font-size:13px}
+.buyrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.buyrow input{width:80px;font-family:var(--mono)}
+.x{position:absolute;top:10px;right:10px;z-index:3;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--ink);font-size:20px;line-height:1;cursor:pointer}
+
+/* DASHBOARD */
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:6px}
+.kpi span{font-size:13px;color:var(--muted)}
+.kpi b{font:600 26px/1.1 var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.kpi small{font-size:12.5px;color:var(--muted)}
+.dgrid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:16px;margin-top:16px}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.box h2{font:700 18px/1.2 var(--display);font-stretch:110%}
+.box-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.tbl-wrap{overflow-x:auto}
+table.tbl{width:100%;border-collapse:collapse;font-size:14px;min-width:620px}
+.tbl th{text-align:left;font:600 11px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--line-strong)}
+.tbl td{padding:10px;border-bottom:1px solid var(--line);vertical-align:middle}
+.tbl td.n{font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:right}
+.tbl th.n{text-align:right}
+.tcell{display:flex;align-items:center;gap:10px;min-width:0}
+.tcell .mthumb{width:48px;height:36px}
+.tcell .mthumb svg{width:34px}
+.status{display:inline-block;font:600 11px/1 var(--mono);letter-spacing:.04em;padding:5px 7px;border-radius:4px;background:var(--well);color:var(--muted);white-space:nowrap}
+.status.live{background:var(--ok-soft);color:var(--ok)}
+.status.pre{background:var(--accent-soft);color:var(--accent)}
+.upg{display:flex;flex-direction:column;gap:6px;align-items:flex-start;font-size:12.5px;color:var(--muted);max-width:240px}
+.dash-sec{display:flex;flex-direction:column;gap:12px;margin-top:16px}
+.orders{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px}
+.meter{height:12px;background:var(--well);border-radius:6px;overflow:hidden;display:flex}
+.meter i{display:block;height:100%}
+.list-plain{margin:0;padding:0;list-style:none;display:flex;flex-direction:column}
+.list-plain li{padding:10px 0;border-top:1px solid var(--line);font-size:14px;display:flex;justify-content:space-between;gap:12px}
+.list-plain li:first-child{border-top:0}
+
+/* toast */
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);opacity:0;z-index:60;background:var(--ink);color:var(--bg);padding:11px 16px;border-radius:8px;font-size:14px;max-width:calc(100% - 32px);box-shadow:var(--shadow);transition:opacity .2s,transform .2s;pointer-events:none}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+footer.foot{border-top:1px solid var(--line);padding-block:20px;color:var(--muted);font-size:13px}
+
+@media (max-width:980px){
+  .hero{grid-template-columns:1fr;gap:28px;padding-block:32px}
+  .studio-grid{grid-template-columns:1fr}
+  .stage{position:static}
+  .two{grid-template-columns:1fr}
+  .dgrid{grid-template-columns:1fr}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .steps5{grid-template-columns:1fr}
+  .steps5 li+li{padding-left:0;border-left:0;border-top:1px solid var(--line);padding-top:14px}
+}
+@media (max-width:760px){
+  .m-grid{grid-template-columns:1fr}
+  .m-img{min-height:220px}
+  .viewport{height:320px}
+  .hero-demo .viewport{height:260px}
+}
+@media (max-width:640px){
+  .top-in{gap:10px}
+  .brand span{display:none}
+  .demo-chip{padding:7px 9px}
+  .stepbar{gap:4px}
+  .stepbar button{padding:8px 6px;font-size:12px}
+  .stepbar .ss{display:none}
+  .tblock{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .aud-row{grid-template-columns:1fr;gap:6px}
+  .aud-row .btn{justify-self:start}
+  .qtyrow,.ziprow{grid-template-columns:auto minmax(0,1fr)}
+  .qtyrow input[type=range]{grid-column:1/-1}
+  .ziprow .hint{grid-column:1/-1}
+  .panel{padding:16px}
+  .page-head h1{font-size:32px}
+  .mk-tools input{width:100%}
+  .mk-tools{width:100%}
+  .orders{grid-template-columns:1fr}
+  .tl{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .kpi b{font-size:21px}
+}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+
+<header class="top">
+  <div class="wrap top-in">
+    <a class="brand" href="#home" aria-label="DesignShip home">
+      <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><rect x="1.5" y="1.5" width="23" height="23" rx="3" fill="none" stroke="currentColor" stroke-width="2.4"/><circle cx="13" cy="13" r="5" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M1.5 19h6M18.5 7h6" stroke="currentColor" stroke-width="2.4"/></svg>
+      <span>DesignShip</span>
+    </a>
+    <nav class="nav" aria-label="Main">
+      <a href="#home" data-nav="home">Home</a>
+      <a href="#studio" data-nav="studio">Design studio</a>
+      <a href="#market" data-nav="market">Marketplace</a>
+      <a href="#dashboard" data-nav="dashboard">Dashboard</a>
+    </nav>
+    <button class="demo-chip" id="resetDemo" type="button" title="Clear your demo orders, listings and likes">Reset demo</button>
+  </div>
+</header>
+
+<main>
+  <!-- HOME -->
+  <section class="view" id="v-home">
+    <div class="wrap hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Custom parts · Made on demand · Royalties</p>
+        <h1 class="display"><span>Design it.</span><span>Make it.</span><span>Sell it.</span></h1>
+        <p class="lede">Upload a CAD file or describe the part you need. DesignShip checks that it can be made, a partner shop builds and ships it, and you earn a royalty every time someone else orders your design.</p>
+        <div class="cta"><a class="btn primary" href="#studio">Start a design</a><a class="btn" href="#market">Browse the marketplace</a></div>
+      </div>
+      <div class="hero-demo">
+        <div class="hero-prompt"><span class="lbl">Prompt</span><p id="heroPrompt"></p><button class="btn ghost sm" id="heroNext" type="button">Next example</button></div>
+        <div class="viewport" id="heroVp"></div>
+        <div class="hero-meta mono" id="heroMeta"></div>
+      </div>
+    </div>
+
+    <div class="wrap section">
+      <h2>From idea to income in five steps</h2>
+      <ol class="steps5">
+        <li><span class="n">STEP 1</span><h3>Design</h3><p>Describe the part in plain English, or upload an STL or STEP file. Every dimension stays editable.</p></li>
+        <li><span class="n">STEP 2</span><h3>Check</h3><p>Automatic checks for wall thickness, hole sizes and machine limits, with one-click fixes.</p></li>
+        <li><span class="n">STEP 3</span><h3>Protect</h3><p>The geometry is fingerprinted, timestamped and compared with every design on DesignShip.</p></li>
+        <li><span class="n">STEP 4</span><h3>Make</h3><p>Instant quotes across 3D printing, CNC and molding. A nearby partner shop builds and ships it.</p></li>
+        <li><span class="n">STEP 5</span><h3>Earn</h3><p>List it in one click. You earn a royalty on every order, plus a share of every remix.</p></li>
+      </ol>
+    </div>
+
+    <div class="wrap section two">
+      <div>
+        <h2>Who it's for</h2>
+        <div class="aud">
+          <div class="aud-row"><h3>Robotics teams</h3><p>Custom brackets and gears in small batches, ready before competition day.</p><button class="btn sm" data-try="1" type="button">Try a motor bracket</button></div>
+          <div class="aud-row"><h3>Mechanics</h3><p>Replacement parts for vehicles and machines whose parts are no longer sold.</p><button class="btn sm" data-try="4" type="button">Try a crank bushing</button></div>
+          <div class="aud-row"><h3>Product creators</h3><p>Launch a product without a factory, inventory or an online store of your own.</p><button class="btn sm" data-try="0" type="button">Try a camera mount</button></div>
+        </div>
+      </div>
+      <div class="money" id="homeMoney"></div>
+    </div>
+    <footer class="foot"><div class="wrap">DesignShip is a concept demo. Prices, shops and listings are examples. No payments are collected.</div></footer>
+  </section>
+
+  <!-- STUDIO -->
+  <section class="view" id="v-studio" hidden>
+    <div class="wrap">
+      <div class="stepbar" id="stepbar" role="tablist" aria-label="Design steps"></div>
+      <div class="studio-grid">
+        <div class="stage">
+          <div class="viewport" id="vp">
+            <div class="hud"><span id="hudType"></span><span id="hudHint">Drag to rotate · scroll to zoom</span></div>
+            <button class="btn sm vp-btn" id="spinBtn" type="button">Pause spin</button>
+          </div>
+          <div class="tblock" id="tblock"></div>
+        </div>
+        <div class="panel" id="panel"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MARKET -->
+  <section class="view" id="v-market" hidden>
+    <div class="wrap">
+      <div class="page-head">
+        <div><h1>Marketplace</h1><p class="sub">Parts designed by the community and made on demand by partner shops. Every order pays the designer a royalty.</p></div>
+        <div class="mk-tools">
+          <input type="search" id="mq" placeholder="Search parts, sizes or designers" aria-label="Search the marketplace">
+          <select id="msort" aria-label="Sort listings"><option value="popular">Most popular</option><option value="new">Newest</option><option value="low">Price: low to high</option><option value="high">Price: high to low</option></select>
+        </div>
+      </div>
+      <div class="cats" id="mcats"></div>
+      <div class="mgrid" id="mgrid"></div>
+    </div>
+  </section>
+
+  <!-- DASHBOARD -->
+  <section class="view" id="v-dashboard" hidden>
+    <div class="wrap">
+      <div class="page-head">
+        <div><h1>Dashboard</h1><p class="sub" id="dashSub"></p></div>
+        <div class="seg" role="tablist" aria-label="Dashboard view"><button type="button" role="tab" data-dtab="creator" aria-selected="true">Creator</button><button type="button" role="tab" data-dtab="mfr" aria-selected="false">Manufacturer partner</button></div>
+      </div>
+      <div id="dashBody" style="padding-bottom:56px"></div>
+    </div>
+  </section>
+</main>
+
+<div class="modal-back" id="modal" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <button class="x" type="button" data-close aria-label="Close">×</button>
+    <div class="m-grid"><div class="m-img" id="mImg"></div><div class="m-body" id="mBody"></div></div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
+<script>
+(function(){
+'use strict';
+/* ---------- helpers ---------- */
+const $=(s,r)=>(r||document).querySelector(s), $$=(s,r)=>Array.from((r||document).querySelectorAll(s));
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money=n=>{const big=Math.abs(n)>=1000;return n.toLocaleString('en-US',{style:'currency',currency:'USD',minimumFractionDigits:big?0:2,maximumFractionDigits:big?0:2})};
+const r1=n=>Math.round(n*10)/10, r2=n=>Math.round(n*100)/100;
+const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+const cssVar=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const reduceMotion=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
+const fmtDate=d=>new Date(d).toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const FEE=0.12, REMIX=0.15, PLAT=0.10;
+const HAS3D=(()=>{try{if(!window.THREE)return false;const c=document.createElement('canvas');return !!(c.getContext('webgl')||c.getContext('experimental-webgl'))}catch(e){return false}})();
+
+/* ---------- part families ---------- */
+const TYPES={
+  clamp:{name:'Tube clamp mount',desc:'Clamps around a round tube or bar and bolts to a flat surface. Common for phone, light and sensor mounts.',holeKey:'h',order:['D','w','t'],roles:{diameter:'D',width:'w',thick:'t',bore:'D',length:'w'},
+    params:[{k:'D',label:'Tube diameter',min:6,max:80,step:0.1,def:31.8,unit:'mm'},{k:'w',label:'Clamp width',min:8,max:60,step:0.5,def:20,unit:'mm'},{k:'t',label:'Wall thickness',min:0.6,max:10,step:0.1,def:4,unit:'mm'},{k:'h',label:'Bolt hole',min:2,max:10,step:0.1,def:5.3,unit:'mm'}]},
+  bracket:{name:'Angle bracket',desc:'A 90° bracket with a support gusset. Bolts two surfaces together, such as a motor to a frame or a shelf to a wall.',holeKey:'h',order:['A','B','w','t'],roles:{length:'A',height:'B',width:'w',thick:'t',bore:'h'},
+    params:[{k:'A',label:'Base leg',min:20,max:200,step:1,def:60,unit:'mm'},{k:'B',label:'Upright leg',min:20,max:200,step:1,def:60,unit:'mm'},{k:'w',label:'Width',min:10,max:80,step:0.5,def:25,unit:'mm'},{k:'t',label:'Thickness',min:0.6,max:12,step:0.1,def:4,unit:'mm'},{k:'h',label:'Bolt hole',min:2,max:12,step:0.1,def:4.3,unit:'mm'},{k:'n',label:'Holes per leg',min:1,max:4,step:1,def:2,unit:''}]},
+  enclosure:{name:'Electronics enclosure',desc:'An open-top box with corner standoffs for mounting a circuit board.',holeKey:null,order:['L','W','H','wall'],roles:{length:'L',width:'W',height:'H',thick:'wall'},
+    params:[{k:'L',label:'Length',min:30,max:260,step:1,def:90,unit:'mm'},{k:'W',label:'Width',min:30,max:200,step:1,def:60,unit:'mm'},{k:'H',label:'Height',min:10,max:120,step:1,def:30,unit:'mm'},{k:'wall',label:'Wall thickness',min:0.6,max:6,step:0.1,def:2,unit:'mm'}]},
+  gear:{name:'Spur gear',desc:'A straight-cut gear. The module sets tooth size, so gears with the same module mesh together.',holeKey:'b',order:['th','b'],roles:{thick:'th',width:'th',length:'th',bore:'b'},
+    params:[{k:'N',label:'Teeth',min:8,max:80,step:1,def:24,unit:''},{k:'m',label:'Module',min:0.5,max:4,step:0.1,def:1.5,unit:''},{k:'th',label:'Face width',min:2,max:30,step:0.5,def:8,unit:'mm'},{k:'b',label:'Bore',min:2,max:30,step:0.1,def:8,unit:'mm'}]},
+  spacer:{name:'Spacer / bushing',desc:'A round sleeve that sets the gap between two parts or replaces a worn bushing.',holeKey:'ID',order:['OD','ID','L'],roles:{diameter:'OD',bore:'ID',length:'L',height:'L'},
+    params:[{k:'OD',label:'Outer diameter',min:3,max:60,step:0.1,def:12,unit:'mm'},{k:'ID',label:'Bore',min:1,max:50,step:0.1,def:5.2,unit:'mm'},{k:'L',label:'Length',min:1,max:120,step:0.5,def:15,unit:'mm'}]}
+};
+const defaults=t=>Object.fromEntries(TYPES[t].params.map(p=>[p.k,p.def]));
+const pdef=(t,k)=>TYPES[t].params.find(p=>p.k===k);
+const fmtv=(v,d)=>d.unit==='mm'?`${r1(v)} mm`:`${r2(v)}`;
+
+const PROCS={
+  fdm:{name:'FDM 3D print',short:'FDM',mat:'PLA+',dens:1.24,tol:'±0.20 mm',minWall:1.2,minHole:2,maxSize:250,lead:3,color:0x3f63c8,metal:0.05,rough:0.72},
+  sla:{name:'Resin print (SLA)',short:'SLA',mat:'Tough resin',dens:1.18,tol:'±0.10 mm',minWall:0.8,minHole:1,maxSize:145,lead:4,color:0xc9cdd4,metal:0,rough:0.38},
+  cnc:{name:'CNC machining',short:'CNC',mat:'Aluminum 6061-T6',dens:2.70,tol:'±0.05 mm',minWall:1.0,minHole:1.5,maxSize:400,lead:7,color:0xb7bec7,metal:0.85,rough:0.32},
+  im:{name:'Injection molding',short:'Molded',mat:'ABS',dens:1.04,tol:'±0.10 mm',minWall:1.0,maxWall:4,minHole:1.5,maxSize:300,lead:25,color:0x30353d,metal:0.1,rough:0.55}
+};
+const PCOL={fdm:'--c1',sla:'--c4',cnc:'--c3',im:'--c2'};
+function unitCost(pk,v,maxDim,q){
+  const disc=q>=500?0.8:q>=50?0.85:q>=10?0.93:1;
+  if(pk==='fdm')return{setup:0,unit:(4.5+v*0.30+(maxDim>150?4:0))*disc};
+  if(pk==='sla')return{setup:0,unit:(6+v*0.55+(maxDim>100?5:0))*disc};
+  if(pk==='cnc')return{setup:85,unit:22*Math.pow(q,-0.18)+v*0.95+(maxDim>150?12:0)};
+  return{setup:2800+(maxDim>150?1500:0),unit:0.45+v*0.045};
+}
+function quote(pk,v,maxDim,q){q=Math.max(1,q);const c=unitCost(pk,v,maxDim,q);const total=c.setup+c.unit*q;return{total,per:total/q,setup:c.setup,unit:c.unit,q}}
+
+const MFRS=[
+  {name:'Bayline Print Farm',city:'San Jose, CA',region:'west',procs:['fdm','sla']},
+  {name:'Coyote Creek Machining',city:'Milpitas, CA',region:'west',procs:['cnc']},
+  {name:'Pacific Moldworks',city:'Fremont, CA',region:'west',procs:['im']},
+  {name:'Prairie Print Works',city:'Omaha, NE',region:'central',procs:['fdm','sla']},
+  {name:'Prairie Precision',city:'Wichita, KS',region:'central',procs:['cnc']},
+  {name:'Lakeshore Molding',city:'Grand Rapids, MI',region:'central',procs:['im']},
+  {name:'Hudson Additive',city:'Yonkers, NY',region:'east',procs:['fdm','sla']},
+  {name:'Merrimack CNC',city:'Lowell, MA',region:'east',procs:['cnc']}
+];
+const regionOf=zip=>{const d=/^\d{5}$/.test(zip)?+zip[0]:9;return d>=8?'west':d>=4?'central':'east'};
+function pickMfr(proc,zip){const reg=regionOf(zip);const m=MFRS.find(x=>x.region===reg&&x.procs.includes(proc));const any=m||MFRS.find(x=>x.procs.includes(proc)&&x.region==='central')||MFRS.find(x=>x.procs.includes(proc));const local=!!m;return{...any,local,ship:local?6.4:11.9,shipDays:local?2:4}}
+
+/* ---------- metrics (analytic, mm) ---------- */
+function metrics(type,p){
+  const PI=Math.PI;
+  if(type==='clamp'){const R=p.D/2+p.t,r=p.D/2,L=2*R+4*p.h+4;return{vol:PI*(R*R-r*r)*p.w+Math.max(0,L*p.w-2*PI*(p.h/2)**2)*p.t,dims:[L,p.t*0.6+2*R,p.w]}}
+  if(type==='bracket'){const ha=PI*(p.h/2)**2,g=Math.min(p.A,p.B)*0.35;return{vol:Math.max(0,p.A*p.w-p.n*ha)*p.t+Math.max(0,(p.B-p.t)*p.w-p.n*ha)*p.t+g*g/2*p.t,dims:[p.A,p.B,p.w]}}
+  if(type==='enclosure'){const iL=Math.max(0,p.L-2*p.wall),iW=Math.max(0,p.W-2*p.wall);return{vol:p.L*p.W*p.H-iL*iW*Math.max(0,p.H-p.wall)+4*PI*9*p.H*0.3,dims:[p.L,p.H,p.W]}}
+  if(type==='gear'){const r=p.m*p.N/2,ra=r+p.m;return{vol:Math.max(0,PI*r*r-PI*(p.b/2)**2)*p.th,dims:[2*ra,2*ra,p.th]}}
+  return{vol:Math.max(0,PI*((p.OD/2)**2-(p.ID/2)**2))*p.L,dims:[p.OD,p.L,p.OD]};
+}
+function partInfo(type,p){const m=metrics(type,p);return{v:m.vol/1000,dims:m.dims,maxDim:Math.max.apply(null,m.dims)}}
+function itemInfo(it,params){return it.type==='upload'?it.metrics:partInfo(it.type,params||it.params)}
+function wallInfo(type,p){
+  if(type==='clamp')return{v:p.t,label:'Clamp wall',fix:m=>({k:'t',v:m})};
+  if(type==='bracket')return{v:p.t,label:'Bracket thickness',fix:m=>({k:'t',v:m})};
+  if(type==='enclosure')return{v:p.wall,label:'Enclosure wall',fix:m=>({k:'wall',v:m})};
+  if(type==='gear')return{v:Math.PI*p.m/2*0.9,label:'Tooth thickness',fix:m=>({k:'m',v:Math.ceil(m/(Math.PI/2*0.9)*10)/10})};
+  if(type==='spacer')return{v:(p.OD-p.ID)/2,label:'Sleeve wall',fix:m=>({k:'OD',v:r1(p.ID+2*m+0.1)})};
+  return null;
+}
+
+/* ---------- 3D ---------- */
+function material(proc){const P=PROCS[proc]||PROCS.fdm;return new THREE.MeshStandardMaterial({color:P.color,metalness:P.metal,roughness:P.rough})}
+function holePath(x,y,r){const p=new THREE.Path();p.absarc(x,y,r,0,Math.PI*2,true);return p}
+function rectShape(w,h,cx,cy){const s=new THREE.Shape();s.moveTo(cx-w/2,cy-h/2);s.lineTo(cx+w/2,cy-h/2);s.lineTo(cx+w/2,cy+h/2);s.lineTo(cx-w/2,cy+h/2);s.lineTo(cx-w/2,cy-h/2);return s}
+const ext=(s,d)=>new THREE.ExtrudeGeometry(s,{depth:Math.max(0.05,d),bevelEnabled:false,curveSegments:40});
+function buildPart(type,p,proc,geo){
+  const mat=material(proc),g=new THREE.Group(),M=gm=>{const me=new THREE.Mesh(gm,mat);g.add(me);return me};
+  if(type==='upload'){M(geo.clone());return g}
+  if(type==='clamp'){
+    const R=p.D/2+p.t,r=p.D/2;const ring=new THREE.Shape();ring.absarc(0,0,R,0,Math.PI*2,false);ring.holes.push(holePath(0,0,r));
+    const rm=M(ext(ring,p.w));rm.position.set(0,p.t*0.6+R,-p.w/2);
+    const L=2*R+4*p.h+4,hx=R+p.h+1;const pl=rectShape(L,p.w,0,0);
+    if(p.h/2<p.w/2-0.3)pl.holes.push(holePath(-hx,0,p.h/2),holePath(hx,0,p.h/2));
+    const pm=M(ext(pl,p.t));pm.rotation.x=-Math.PI/2;
+  }else if(type==='bracket'){
+    const n=Math.round(p.n),ok=p.h/2<p.w/2-0.3;
+    const hs=rectShape(p.A,p.w,p.A/2,0);if(ok)for(let i=0;i<n;i++)hs.holes.push(holePath(p.t+(p.A-p.t)*(i+1)/(n+1),0,p.h/2));
+    const hm=M(ext(hs,p.t));hm.rotation.x=-Math.PI/2;
+    const vs=rectShape(p.w,p.B,0,p.B/2);if(ok)for(let i=0;i<n;i++)vs.holes.push(holePath(0,p.t+(p.B-p.t)*(i+1)/(n+1),p.h/2));
+    const vm=M(ext(vs,p.t));vm.rotation.y=Math.PI/2;
+    const gg=Math.min(p.A,p.B)*0.35;const tri=new THREE.Shape();tri.moveTo(p.t,p.t);tri.lineTo(p.t+gg,p.t);tri.lineTo(p.t,p.t+gg);tri.lineTo(p.t,p.t);
+    const tm=M(ext(tri,p.t));tm.position.z=-p.t/2;
+  }else if(type==='enclosure'){
+    const outer=rectShape(p.L,p.W,0,0),a=p.L/2-p.wall,b=p.W/2-p.wall;
+    if(a>0.5&&b>0.5){const h=new THREE.Path();h.moveTo(-a,-b);h.lineTo(-a,b);h.lineTo(a,b);h.lineTo(a,-b);h.lineTo(-a,-b);outer.holes.push(h)}
+    const wm=M(ext(outer,p.H));wm.rotation.x=-Math.PI/2;
+    const fm=M(ext(rectShape(p.L,p.W,0,0),p.wall));fm.rotation.x=-Math.PI/2;
+    if(a>9&&b>9){const sh=p.H*0.3;[[1,1],[1,-1],[-1,1],[-1,-1]].forEach(([sx,sz])=>{const c=M(new THREE.CylinderGeometry(3,3,sh,20));c.position.set(sx*(a-5),p.wall+sh/2,sz*(b-5))})}
+  }else if(type==='gear'){
+    const N=Math.round(p.N),r=p.m*N/2,ra=r+p.m,rf=Math.max(r-1.25*p.m,p.b/2+0.4),P=Math.PI*2/N,s=new THREE.Shape();
+    for(let i=0;i<N;i++){const a=i*P;[[rf,a],[ra,a+0.16*P],[ra,a+0.34*P],[rf,a+0.5*P],[rf,a+0.75*P]].forEach(([rr,aa],j)=>{const x=rr*Math.cos(aa),y=rr*Math.sin(aa);if(i===0&&j===0)s.moveTo(x,y);else s.lineTo(x,y)})}
+    s.closePath();if(p.b/2<rf-0.3)s.holes.push(holePath(0,0,p.b/2));
+    const gm=M(ext(s,p.th));gm.position.z=-p.th/2;
+  }else{
+    const s=new THREE.Shape();s.absarc(0,0,p.OD/2,0,Math.PI*2,false);if(p.ID<p.OD-0.2)s.holes.push(holePath(0,0,p.ID/2));
+    const sm=M(ext(s,p.L));sm.rotation.x=-Math.PI/2;
+  }
+  return g;
+}
+function fitWrap(obj){obj.updateMatrixWorld(true);const box=new THREE.Box3().setFromObject(obj),size=new THREE.Vector3(),c=new THREE.Vector3();box.getSize(size);box.getCenter(c);obj.position.sub(c);const s=1.7/Math.max(size.x,size.y,size.z,0.001);const w=new THREE.Group();w.add(obj);w.scale.setScalar(s);return{wrap:w,half:size.y*s/2}}
+function dispose(o){o.traverse(n=>{if(n.geometry)n.geometry.dispose();if(n.material){(Array.isArray(n.material)?n.material:[n.material]).forEach(m=>m.dispose())}})}
+function addLights(sc){sc.add(new THREE.HemisphereLight(0xffffff,0x8a96a8,0.85));const d=new THREE.DirectionalLight(0xffffff,0.85);d.position.set(3,5,4);sc.add(d);const d2=new THREE.DirectionalLight(0xffffff,0.3);d2.position.set(-4,2,-3);sc.add(d2)}
+const viewers=[];
+function makeViewer(el,opts){
+  opts=opts||{};
+  if(!HAS3D){return null}
+  let renderer;try{renderer=new THREE.WebGLRenderer({antialias:true,alpha:true})}catch(e){return null}
+  renderer.setPixelRatio(Math.min(2,window.devicePixelRatio||1));el.insertBefore(renderer.domElement,el.firstChild);
+  const scene=new THREE.Scene(),cam=new THREE.PerspectiveCamera(34,1,0.1,100);cam.position.set(2.3,1.65,2.7);cam.lookAt(0,0,0);addLights(scene);
+  const holder=new THREE.Group();scene.add(holder);let grid=null,half=0.5;
+  let ctl=null;if(opts.controls&&THREE.OrbitControls){ctl=new THREE.OrbitControls(cam,renderer.domElement);ctl.enableDamping=true;ctl.enablePan=false;ctl.minDistance=1.6;ctl.maxDistance=8;ctl.autoRotate=!reduceMotion;ctl.autoRotateSpeed=1.4}
+  let spin=!reduceMotion;
+  function size(){const w=el.clientWidth,h=el.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix()}
+  if(window.ResizeObserver)new ResizeObserver(size).observe(el);else window.addEventListener('resize',size);size();
+  function regrid(){if(grid){scene.remove(grid);grid.geometry.dispose();grid.material.dispose()}grid=new THREE.GridHelper(4,20,new THREE.Color(cssVar('--line-strong')||'#aeb9c7'),new THREE.Color(cssVar('--line')||'#d3dae3'));grid.position.y=-half-0.003;scene.add(grid)}
+  (function loop(){requestAnimationFrame(loop);if(!el.offsetParent)return;if(ctl){ctl.update()}else if(spin){holder.rotation.y+=0.006}renderer.render(scene,cam)})();
+  const api={set(obj){while(holder.children.length){const c=holder.children.pop();dispose(c)}const f=fitWrap(obj);half=f.half;holder.add(f.wrap);regrid()},regrid,toggleSpin(){spin=!spin;if(ctl)ctl.autoRotate=spin;return spin},get spinning(){return spin}};
+  viewers.push(api);return api;
+}
+const thumbCache=new Map();let TR=null;
+function thumbURL(type,params,proc,geo,w,h){
+  if(!HAS3D)return null;w=w||400;h=h||300;
+  const key=type+'|'+JSON.stringify(params)+'|'+proc+'|'+w+(geo?Math.random():'');
+  if(thumbCache.has(key))return thumbCache.get(key);
+  try{
+    if(!TR){const ren=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});const sc=new THREE.Scene();addLights(sc);const cam=new THREE.PerspectiveCamera(30,4/3,0.1,100);cam.position.set(2.3,1.6,2.8);cam.lookAt(0,-0.05,0);TR={ren,sc,cam}}
+    TR.ren.setPixelRatio(1);TR.ren.setSize(w,h,false);TR.cam.aspect=w/h;TR.cam.updateProjectionMatrix();
+    const f=fitWrap(buildPart(type,params,proc,geo));f.wrap.rotation.y=-0.45;TR.sc.add(f.wrap);TR.ren.render(TR.sc,TR.cam);
+    const url=TR.ren.domElement.toDataURL('image/png');TR.sc.remove(f.wrap);dispose(f.wrap);if(!geo)thumbCache.set(key,url);return url;
+  }catch(e){return null}
+}
+function glyph(type){const s={clamp:'<circle cx="60" cy="38" r="20"/><circle cx="60" cy="38" r="13"/><rect x="20" y="58" width="80" height="8"/>',bracket:'<path d="M32 18v48h58v-8H40V18z"/><path d="M40 58l14-14"/>',enclosure:'<rect x="24" y="24" width="72" height="42"/><rect x="30" y="30" width="60" height="36"/>',gear:'<circle cx="60" cy="44" r="24" stroke-dasharray="6 5" stroke-width="7"/><circle cx="60" cy="44" r="6"/>',spacer:'<rect x="44" y="16" width="32" height="56"/><rect x="53" y="16" width="14" height="56"/>',upload:'<path d="M28 66l32-48 32 48z"/>'}[type]||'';return `<svg viewBox="0 0 120 88" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2">${s}</svg>`}
+const pic=(url,type,alt)=>url?`<img src="${url}" alt="${esc(alt)}">`:glyph(type);
+const itemPic=(it,w,h)=>pic(it.thumb||(it.type==='upload'?null:thumbURL(it.type,it.params,it.proc,null,w,h)),it.type,it.name);
+
+/* ---------- seed data ---------- */
+const SEED_ITEMS=[
+  {id:'h1',name:'Handlebar Phone Mount, 31.8 mm',designer:'You',mine:true,type:'clamp',params:{D:31.8,w:20,t:4,h:5.3},proc:'fdm',price:16,cat:'Bike & outdoor',likes:412,sold:642,monthly:210,custom:['D','w'],remix:true,created:'2026-03-02'},
+  {id:'m1',name:'Motor Mount Bracket, 4-bolt',designer:'You',mine:true,type:'bracket',params:{A:50,B:70,w:40,t:4,h:4.3,n:2},proc:'cnc',price:62,cat:'Robotics',likes:96,sold:118,monthly:31,custom:['A','B'],remix:true,created:'2026-06-14'},
+  {id:'r1',name:'Handlebar Mount, 25.4 mm cruiser bars',designer:'Theo K.',type:'clamp',params:{D:25.4,w:22,t:4,h:5.3},proc:'fdm',price:15,cat:'Bike & outdoor',likes:58,sold:87,monthly:29,custom:[],remix:true,remixOf:'h1',created:'2026-08-20'},
+  {id:'g1',name:'24T Spur Gear, Module 1.5',designer:'Ironclad Robotics #8812',type:'gear',params:{N:24,m:1.5,th:8,b:8},proc:'sla',price:18,cat:'Robotics',likes:233,sold:540,monthly:60,custom:['N','b'],remix:true,created:'2026-02-11'},
+  {id:'s1',name:'Window Crank Bushing, 1990s pickups',designer:"Dale's Garage",type:'spacer',params:{OD:14,ID:6.4,L:11},proc:'sla',price:11,cat:'Auto & repair',likes:174,sold:1203,monthly:90,custom:[],remix:false,created:'2025-11-30'},
+  {id:'e1',name:'Sensor Board Enclosure 90×60',designer:'Priya N.',type:'enclosure',params:{L:90,W:60,H:30,wall:2},proc:'fdm',price:22,cat:'Electronics',likes:141,sold:220,monthly:24,custom:['L','W','H'],remix:true,created:'2026-05-09'},
+  {id:'b2',name:'Heavy Shelf Bracket, 120 mm',designer:'Northfold Home',type:'bracket',params:{A:120,B:120,w:30,t:6,h:5.3,n:2},proc:'fdm',price:26,cat:'Home repair',likes:88,sold:310,monthly:20,custom:['A','B'],remix:true,created:'2026-04-18'},
+  {id:'c2',name:'Dishwasher Rack Clip, 9 mm tine',designer:'FixIt Collective',type:'clamp',params:{D:9,w:10,t:1.6,h:3.2},proc:'sla',price:11,cat:'Home repair',likes:501,sold:2210,monthly:140,custom:['D'],remix:true,created:'2025-09-03'},
+  {id:'g2',name:'40T Drive Gear, Module 1',designer:'Ironclad Robotics #8812',type:'gear',params:{N:40,m:1,th:10,b:8},proc:'im',price:9,cat:'Robotics',likes:260,sold:0,monthly:0,custom:[],remix:false,preorder:{have:312,need:500},created:'2026-10-12'},
+  {id:'s2',name:'Standoff Kit, M3 × 20 mm',designer:'Priya N.',type:'spacer',params:{OD:6,ID:3.2,L:20},proc:'im',price:4.5,cat:'Electronics',likes:190,sold:0,monthly:0,custom:['L'],remix:true,preorder:{have:880,need:1000},created:'2026-10-20'},
+  {id:'e2',name:'Trail Camera Housing',designer:'Ridgeback Outdoors',type:'enclosure',params:{L:110,W:80,H:55,wall:2.5},proc:'fdm',price:38,cat:'Bike & outdoor',likes:77,sold:95,monthly:12,custom:[],remix:true,created:'2026-07-01'},
+  {id:'b3',name:'Mower Deflector Bracket',designer:"Dale's Garage",type:'bracket',params:{A:80,B:45,w:30,t:5,h:6.4,n:1},proc:'cnc',price:64,cat:'Auto & repair',likes:39,sold:41,monthly:5,custom:[],remix:false,created:'2026-09-22'}
+];
+const CATS=['All','Robotics','Auto & repair','Home repair','Bike & outdoor','Electronics'];
+const STAGES=['Order placed','File checked','In production','Quality check','Shipped','Delivered'];
+const JSTAT=['New','Accepted','Printing','Shipped'],JACT=['Accept job','Start printing','Mark shipped'];
+const clone=o=>JSON.parse(JSON.stringify(o));
+function seedOrders(){const it=SEED_ITEMS[1],I=partInfo(it.type,it.params),q=quote('cnc',I.v,I.maxDim,10),parts=q.total;return[{id:'DS-10471',name:it.name,type:it.type,params:clone(it.params),proc:'cnc',qty:10,parts,ship:6.4,total:parts+6.4,mfr:'Coyote Creek Machining',city:'Milpitas, CA',stage:2,placed:addDays(new Date(),-4).toISOString(),eta:addDays(new Date(),5).toISOString(),source:'studio'}]}
+const SEED_JOBS=[{id:'J-2291',item:'c2',qty:120,proc:'sla',due:'Oct 31',st:2},{id:'J-2294',item:'h1',qty:48,proc:'fdm',due:'Nov 2',st:1},{id:'J-2298',item:'e1',qty:12,proc:'fdm',due:'Nov 4',st:0}];
+let ITEMS,ORDERS,JOBS,SEQ;
+function resetData(){ITEMS=clone(SEED_ITEMS);ORDERS=seedOrders();JOBS=clone(SEED_JOBS);SEQ=10481}
+const KEY='designship-demo-v1';
+function save(){try{localStorage.setItem(KEY,JSON.stringify({ITEMS,ORDERS,JOBS,SEQ}))}catch(e){}}
+function load(){resetData();try{const d=JSON.parse(localStorage.getItem(KEY)||'null');if(d&&Array.isArray(d.ITEMS)){ITEMS=d.ITEMS;ORDERS=d.ORDERS||ORDERS;JOBS=d.JOBS||JOBS;SEQ=d.SEQ||SEQ}}catch(e){}}
+const byId=id=>ITEMS.find(i=>i.id===id);
+function batchFor(it){return it.proc==='im'?(it.preorder?it.preorder.need:Math.max(250,(it.monthly||80)*3)):it.proc==='cnc'?10:1}
+function marketCost(it,params){const I=itemInfo(it,params);return quote(it.proc,I.v,I.maxDim,batchFor(it)).per}
+function royaltyOf(it,params,price){const p=price==null?it.price:price;return Math.max(0,p-p*FEE-marketCost(it,params))}
+function designerShare(it,params,price){const r=royaltyOf(it,params,price);return it.remixOf?r*(1-REMIX):r}
+
+/* ---------- toast ---------- */
+let tT;function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('on');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('on'),3400)}
+
+/* ---------- prompt parsing ---------- */
+const EX=[
+  {label:'Handlebar camera mount',text:'Camera mount that clamps to a 22 mm handlebar, 18 mm wide, M4 bolts'},
+  {label:'Robot motor bracket',text:'L bracket for a drive motor, 50 x 70 mm legs, 40 mm wide, 4 mm thick aluminum, 2 holes per leg, M4 bolts'},
+  {label:'Sensor enclosure',text:'Enclosure for a sensor board, 90 x 60 x 30 mm, 2 mm walls'},
+  {label:'Spur gear',text:'Spur gear, 24 teeth, module 1.5, 8 mm thick, 8 mm bore'},
+  {label:'Window crank bushing',text:'Bushing for a truck window crank, 16 mm OD, 6.4 mm bore, 18 mm long, resin'}
+];
+const ROLE_RE={bore:/bore|inner|\bid\b|hole/,diameter:/diam|dia\b|tube|bar|pipe|rod|pole|\bod\b|outer/,width:/wide|width/,height:/tall|high|height/,length:/long|length|legs?\b/,thick:/thick|wall/};
+const unitF=u=>!u?1:/^c/.test(u)?10:/^(in|")/.test(u)?25.4:1;
+function parsePrompt(text){
+  const t=' '+text.toLowerCase()+' ';let type='bracket';
+  if(/gear|sprocket|pinion|teeth/.test(t))type='gear';
+  else if(/enclosure|\bbox\b|\bcase\b|housing/.test(t))type='enclosure';
+  else if(/spacer|standoff|bushing|sleeve|washer|collar/.test(t))type='spacer';
+  else if(/bracket|angle|corner|shelf/.test(t))type='bracket';
+  else if(/clamp|handlebar|tube|pipe|pole|rail|\bbar\b|mount/.test(t))type='clamp';
+  let proc=null,why='';
+  if(/alumin|metal|steel|machin/.test(t)){proc='cnc';why='you asked for metal'}else if(/resin|fine detail|\bsla\b/.test(t)){proc='sla';why='you asked for resin'}else if(/mold|thousands|mass produc/.test(t)){proc='im';why='you mentioned high volume'}
+  const T=TYPES[type],p=defaults(type),used={},notes=[`Part family: ${T.name}`];
+  const set=(k,v,extra)=>{if(!k||used[k])return;const d=pdef(type,k);if(!d)return;p[k]=d.step>=1?Math.round(clamp(v,d.min,d.max)):r2(clamp(v,d.min,d.max));used[k]=1;notes.push(`${d.label}: ${fmtv(p[k],d)}${extra?' '+extra:''}`)};
+  const mb=t.match(/\bm(\d{1,2})\b/);if(mb&&T.holeKey&&type!=='gear')set(T.holeKey,+mb[1]+(type==='spacer'?0.2:0.3),`(clearance for M${mb[1]})`);
+  const mt=t.match(/(\d+)\s*(?:teeth|tooth)/);if(mt&&type==='gear')set('N',+mt[1]);
+  const mm=t.match(/module\s*(\d+(?:\.\d+)?)/);if(mm&&type==='gear')set('m',+mm[1]);
+  const mh=t.match(/(\d)\s*(?:bolt\s*)?holes/);if(mh&&type==='bracket')set('n',+mh[1]);
+  const consumed=[];
+  const mx=t.match(/(\d+(?:\.\d+)?)\s*(?:mm)?\s*[x×]\s*(\d+(?:\.\d+)?)(?:\s*(?:mm)?\s*[x×]\s*(\d+(?:\.\d+)?))?\s*(mm|cm|in\b|")?/);
+  if(mx){const f=unitF(mx[4]);const keys=type==='enclosure'?['L','W','H']:type==='bracket'?['A','B','w']:T.order;[mx[1],mx[2],mx[3]].filter(Boolean).forEach((v,i)=>set(keys[i],+v*f));consumed.push([mx.index,mx.index+mx[0].length])}
+  const re=/(?<![a-z\d.])(\d+(?:\.\d+)?)\s*(mm|cm|inch(?:es)?|in\b|")?/g;let m;
+  while((m=re.exec(t))){
+    const at=m.index;if(consumed.some(([a,b])=>at>=a&&at<b))continue;
+    const before=t.slice(Math.max(0,at-10),at);if(/module\s*$/.test(before))continue;
+    const after=t.slice(at+m[0].length,at+m[0].length+18);
+    if(/^\s*(?:teeth|tooth|holes|bolt|per\b|x\b|×)/.test(after))continue;
+    let best=null,bi=99;for(const r in ROLE_RE){const mm2=after.match(ROLE_RE[r]);if(mm2&&mm2.index<bi){bi=mm2.index;best=r}}
+    let k=best&&T.roles[best]&&!used[T.roles[best]]?T.roles[best]:null;
+    if(!k){if(!m[2])continue;k=T.order.find(x=>!used[x])}
+    set(k,+m[1]*unitF(m[2]));
+  }
+  if(notes.length===1)notes.push('No sizes found, so standard sizes were used. Adjust any dimension below.');
+  if(proc)notes.push(`Suggested process: ${PROCS[proc].name} (${why})`);
+  notes.push(`Built a parametric model with ${T.params.length} adjustable dimensions`);
+  return{type,params:p,proc,notes};
+}
+
+/* ---------- studio state ---------- */
+const S={step:0,mode:'ai',prompt:EX[0].text,type:'clamp',params:defaults('clamp'),proc:'fdm',useUpload:false,upload:null,uploadMsg:'',log:[],busy:false,qty:10,zip:'95112',fp:null,remixOf:null,remixAuto:false,lastOrder:null,listing:null,listedId:null};
+(function initStudio(){const r=parsePrompt(S.prompt);S.type=r.type;S.params=r.params;if(r.proc)S.proc=r.proc})();
+function cur(){if(S.useUpload&&S.upload){const u=S.upload;return{type:'upload',name:u.name.replace(/\.[^.]+$/,''),v:u.v,dims:u.dims,maxDim:u.maxDim,params:null}}const I=partInfo(S.type,S.params);return{type:S.type,params:S.params,name:TYPES[S.type].name,v:I.v,dims:I.dims,maxDim:I.maxDim}}
+function fpKey(c){return c.type==='upload'?`u|${c.dims.map(r1).join(',')}|${r1(c.v)}`:`${c.type}|${TYPES[c.type].params.map(d=>r2(c.params[d.k])).join(',')}`}
+function hashHex(s,seed){let h=seed>>>0;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)>>>0}return h.toString(16).padStart(8,'0')}
+function fpId(key){const x=(hashHex(key,2166136261)+hashHex(key,0x9e3779b9)).toUpperCase();return`DSF-${x.slice(0,4)}-${x.slice(4,8)}-${x.slice(8,12)}`}
+const fpFresh=()=>!!(S.fp&&S.fp.key===fpKey(cur()));
+function titleFor(c){const p=c.params;switch(c.type){case'clamp':return`Tube Clamp Mount, ${r1(p.D)} mm`;case'bracket':return`Angle Bracket ${Math.round(p.A)}×${Math.round(p.B)} mm`;case'enclosure':return`Enclosure ${Math.round(p.L)}×${Math.round(p.W)}×${Math.round(p.H)} mm`;case'gear':return`${Math.round(p.N)}T Spur Gear, Module ${r1(p.m)}`;case'spacer':return`Bushing ${r1(p.OD)} × ${r1(p.L)} mm`;default:return c.name}}
+const catFor=t=>({clamp:'Bike & outdoor',bracket:'Robotics',enclosure:'Electronics',gear:'Robotics',spacer:'Auto & repair'}[t]||'Home repair');
+
+/* ---------- DFM ---------- */
+function dfm(c,proc){
+  const P=PROCS[proc],out=[];
+  if(c.type==='upload'){
+    out.push(c.maxDim>P.maxSize?{st:'fail',t:'Too large for this process',d:`Longest side is ${r1(c.maxDim)} mm. ${P.short} limit is ${P.maxSize} mm.`,fix:{proc:altProc(c.maxDim)}}:{st:'pass',t:'Fits the machine',d:`${r1(c.maxDim)} mm of a ${P.maxSize} mm build envelope.`});
+    out.push({st:'info',t:'Wall thickness and holes',d:'For uploaded meshes, walls and holes are measured on our servers before production. This demo checks size only.'});
+    return out;
+  }
+  const p=c.params,T=TYPES[c.type];
+  if(c.type==='spacer'&&p.ID>=p.OD-0.4)out.push({st:'fail',t:'Bore is wider than the part',d:`A ${r1(p.ID)} mm bore doesn't fit inside a ${r1(p.OD)} mm sleeve.`,fix:{k:'OD',v:r1(p.ID+4)}});
+  if(c.type==='gear'){const rf=p.m*p.N/2-1.25*p.m;if(p.b/2>=rf-0.6)out.push({st:'fail',t:'Bore cuts into the teeth',d:`The bore reaches the tooth roots at ${r1(rf*2)} mm.`,fix:{k:'b',v:Math.max(2,Math.floor((rf-1.6)*2))}})}
+  if(c.type==='enclosure'&&2*p.wall>=Math.min(p.L,p.W)-10)out.push({st:'fail',t:'Walls leave no room inside',d:'The walls take up almost the whole box.',fix:{k:'wall',v:2}});
+  if((c.type==='bracket'||c.type==='clamp')&&p.h*2.2>p.w)out.push({st:'warn',t:'Holes too close to the edge',d:`Keep at least 0.6× the hole size of material on each side. Width is ${r1(p.w)} mm.`,fix:{k:'h',v:r1(p.w/2.2)}});
+  const W=wallInfo(c.type,p);
+  if(W){
+    if(W.v<P.minWall)out.push({st:'fail',t:'Wall too thin',d:`${W.label} is ${r2(W.v)} mm. ${P.short} needs at least ${P.minWall} mm.`,fix:W.fix(P.minWall)});
+    else if(P.maxWall&&W.v>P.maxWall)out.push({st:'warn',t:'Thick walls may sink',d:`Molded walls over ${P.maxWall} mm can warp or show sink marks. ${W.label} is ${r1(W.v)} mm.`,fix:W.fix(3)});
+    else out.push({st:'pass',t:'Wall thickness',d:`${W.label} is ${r2(W.v)} mm. Minimum for ${P.short} is ${P.minWall} mm.`});
+  }
+  if(T.holeKey){const hv=p[T.holeKey];out.push(hv<P.minHole?{st:'warn',t:'Small hole may close up',d:`The ${r1(hv)} mm hole is under the ${P.minHole} mm minimum for ${P.short}. It would need drilling afterward.`,fix:{k:T.holeKey,v:P.minHole}}:{st:'pass',t:'Hole size',d:`${r1(hv)} mm. Minimum for ${P.short} is ${P.minHole} mm.`})}
+  out.push(c.maxDim>P.maxSize?{st:'fail',t:'Too large for this process',d:`Longest side is ${r1(c.maxDim)} mm. ${P.short} limit is ${P.maxSize} mm.`,fix:{proc:altProc(c.maxDim)}}:{st:'pass',t:'Fits the machine',d:`Longest side ${r1(c.maxDim)} mm, within the ${P.maxSize} mm limit.`});
+  if(proc==='fdm'&&c.type==='gear'&&p.m<1)out.push({st:'warn',t:'Small teeth print rough',d:'Teeth under module 1 come out rough on FDM. Resin gives cleaner teeth.',fix:{proc:'sla'}});
+  if(proc==='cnc'&&c.type==='enclosure')out.push({st:'info',t:'Inside corners get a 3 mm radius',d:'The cutting tool is round, so inside corners cannot be perfectly square.'});
+  if(proc==='im')out.push({st:'info',t:'1° draft angle added',d:'Walls get a slight taper so the part releases from the mold.'});
+  if(proc==='fdm')out.push({st:'info',t:'Print orientation chosen',d:c.type==='clamp'?'Printed on its base so layers wrap around the tube, where the load is.':'Oriented so layer lines run across the main load.'});
+  return out;
+}
+const altProc=d=>['fdm','im','cnc'].find(k=>PROCS[k].maxSize>=d)||'cnc';
+const fails=(c,proc)=>dfm(c,proc).filter(x=>x.st==='fail').length;
+function fixLabel(f,c){if(f.proc)return`Switch to ${PROCS[f.proc].name}`;const d=pdef(c.type,f.k);return`Set ${d.label.toLowerCase()} to ${fmtv(f.v,d)}`}
+
+/* ---------- similarity ---------- */
+function desc(I){const d=I.dims.slice().sort((a,b)=>b-a),mx=d[0]||1;return[d[1]/mx,d[2]/mx,Math.min(1,I.v*1000/(d[0]*d[1]*d[2]||1))]}
+function similarity(c,it){
+  if(c.type!=='upload'&&it.type===c.type){let d=0;const ps=TYPES[c.type].params;ps.forEach(p=>{d+=Math.abs(c.params[p.k]-it.params[p.k])/(p.max-p.min)});d/=ps.length;return clamp(1-d*4,0,1)}
+  const a=desc(c),b=desc(itemInfo(it));let d=0;for(let i=0;i<3;i++)d+=(a[i]-b[i])**2;return clamp(1-Math.sqrt(d)*1.6,0,1)*0.62;
+}
+
+/* ---------- router ---------- */
+const VIEWS=['home','studio','market','dashboard'];
+function route(){const h=(location.hash||'#home').slice(1);const v=VIEWS.includes(h)?h:'home';VIEWS.forEach(x=>{$('#v-'+x).hidden=x!==v});$$('[data-nav]').forEach(a=>{if(a.dataset.nav===v)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
+  if(v==='home')renderHomeMoney();if(v==='studio'){renderStudio();updateModel()}if(v==='market')renderMarket();if(v==='dashboard')renderDash();window.scrollTo(0,0)}
+window.addEventListener('hashchange',route);
+
+/* ---------- HOME ---------- */
+let heroV=null,heroIdx=0,heroTimer=null;const HERO=[0,3,2,1,4];
+function showHero(){const ex=EX[HERO[heroIdx%HERO.length]],r=parsePrompt(ex.text),proc=r.proc||'fdm',I=partInfo(r.type,r.params),q=proc==='cnc'?10:1,per=quote(proc,I.v,I.maxDim,q).per;
+  $('#heroPrompt').textContent='“'+ex.text+'”';
+  $('#heroMeta').textContent=`${TYPES[r.type].name} · ${I.dims.map(x=>Math.round(x)).join(' × ')} mm · ${PROCS[proc].mat} · ${money(per)} each at qty ${q}`;
+  if(heroV)heroV.set(buildPart(r.type,r.params,proc));else $('#heroVp').innerHTML=`<div class="glyph-big">${glyph(r.type)}</div>`}
+function renderHomeMoney(){const it=byId('h1')||ITEMS[0];const c=marketCost(it),fee=it.price*FEE,roy=royaltyOf(it);
+  $('#homeMoney').innerHTML=`<p class="eyebrow">Example sale</p><h3>Where a ${money(it.price)} order of “${esc(it.name)}” goes</h3>${splitBar([[c,'--c2','Partner shop makes and ships it'],[roy,'--c1','Designer royalty'],[fee,'--line-strong','DesignShip (12%)']])}<p class="hint">The shop is paid for the part, the designer earns on every order, and DesignShip keeps 12%. Popular parts move to cheaper production methods, which raises the royalty.</p>`}
+function splitBar(parts){const tot=parts.reduce((a,p)=>a+p[0],0)||1;return`<div class="split" role="img" aria-label="${esc(parts.map(p=>p[2]+' '+money(p[0])).join(', '))}">${parts.map(p=>`<i style="flex:${(p[0]/tot).toFixed(4)};background:var(${p[1]})"></i>`).join('')}</div><dl class="split-legend">${parts.map(p=>`<div><dt><span class="sw" style="background:var(${p[1]})"></span>${esc(p[2])}</dt><dd>${money(p[0])}</dd></div>`).join('')}</dl>`}
+
+/* ---------- STUDIO ---------- */
+const STEPS=['Design','Check','Protect','Make','List'];
+let vp=null;
+function stepState(i){const c=cur();
+  if(i===0)return S.useUpload?['Uploaded file','good']:['Parametric model','good'];
+  if(i===1){const n=fails(c,S.proc);return n?[`${n} to fix`,'bad']:['Ready to make','good']}
+  if(i===2)return fpFresh()?['Registered','good']:S.fp?['Changed, re-scan','mid']:['Not registered',''];
+  if(i===3)return S.lastOrder?[`Ordered ${S.lastOrder}`,'good']:['Not ordered',''];
+  return S.listedId?['Listed','good']:['Not listed',''];
+}
+function renderStepbar(){$('#stepbar').innerHTML=STEPS.map((s,i)=>{const[st,cl]=stepState(i);return`<button type="button" role="tab" aria-selected="${i===S.step}" data-step="${i}"><span class="sn">STEP ${i+1}</span>${s}<span class="ss ${cl}">${esc(st)}</span></button>`}).join('')}
+function renderTitleBlock(){const c=cur(),P=PROCS[S.proc],fresh=fpFresh();
+  const cells=[['Part',c.type==='upload'?c.name:titleFor(c),'w2'],['Process',P.short],['Material',P.mat],['Envelope (mm)',c.dims.map(r1).join(' × '),'w2'],['Volume',`${r2(c.v)} cm³`],['Mass',`${r1(c.v*P.dens)} g`],['Tolerance',P.tol],['Rev',S.remixOf?'R1 (remix)':'A'],['Fingerprint',fresh?S.fp.id:'Not registered','w2',!fresh]];
+  $('#tblock').innerHTML=cells.map(([l,v,w,none])=>`<div class="${w||''}"><span>${l}</span><b class="${none?'fp-none':''}" title="${esc(v)}">${esc(v)}</b></div>`).join('');
+  $('#hudType').textContent=c.type==='upload'?'Uploaded mesh':TYPES[c.type].name;
+}
+let modelQueued=false;
+function updateModel(){if(modelQueued)return;modelQueued=true;requestAnimationFrame(()=>{modelQueued=false;const c=cur();if(vp){vp.set(c.type==='upload'?buildPart('upload',null,S.proc,S.upload.geo):buildPart(c.type,c.params,S.proc))}else if(!$('#vp .glyph-big')){$('#vp').insertAdjacentHTML('afterbegin',`<div class="glyph-big">${glyph(c.type)}</div>`)}renderTitleBlock()})}
+function renderStudio(){renderStepbar();renderPanel()}
+function navBtns(prev,next,nextLabel){return`<div class="navbtns">${prev!=null?`<button class="btn" type="button" data-go="${prev}">← ${STEPS[prev]}</button>`:'<span></span>'}${next!=null?`<button class="btn primary" type="button" data-go="${next}">${nextLabel||'Next: '+STEPS[next]} →</button>`:''}</div>`}
+function renderPanel(){const f=[pDesign,pCheck,pProtect,pMake,pList][S.step];$('#panel').innerHTML=f();if(S.step===3)updateMake();if(S.step===4)updateListing()}
+
+function paramRows(){if(S.useUpload)return'';return`<h3>Dimensions</h3><div class="params">${TYPES[S.type].params.map(d=>`<div class="prm"><label for="p-${d.k}">${d.label}</label><span class="numw"><input type="number" id="n-${d.k}" data-k="${d.k}" min="${d.min}" max="${d.max}" step="${d.step}" value="${r2(S.params[d.k])}" aria-label="${d.label} value"><span class="u">${d.unit}</span></span><input type="range" id="p-${d.k}" data-k="${d.k}" min="${d.min}" max="${d.max}" step="${d.step}" value="${S.params[d.k]}"></div>`).join('')}</div>`}
+function pDesign(){
+  const ai=S.mode==='ai';
+  return`<div class="ph"><h2>Design your part</h2><p>Describe it in plain English or upload a CAD file. Every dimension stays editable afterward.</p></div>
+  ${S.remixOf&&byId(S.remixOf)?`<div class="verdict info"><span class="vicon">R</span><div><b>Remixing “${esc(byId(S.remixOf).name)}”</b><p>${esc(byId(S.remixOf).designer)} allows remixes and earns 15% of your royalty if you list this.</p></div></div>`:''}
+  <div class="seg" role="group" aria-label="How to start"><button type="button" data-mode="ai" aria-pressed="${ai}">Describe with AI</button><button type="button" data-mode="upload" aria-pressed="${!ai}">Upload CAD</button></div>
+  ${ai?`<div class="field"><label for="prompt">What do you need?</label><textarea id="prompt" rows="3">${esc(S.prompt)}</textarea></div>
+  <div class="examples" aria-label="Example prompts">${EX.map((e,i)=>`<button class="chip" type="button" data-ex="${i}">${e.label}</button>`).join('')}</div>
+  <div><button class="btn primary" type="button" id="genBtn" ${S.busy?'disabled':''}>${S.busy?'Generating…':'Generate part'}</button></div>
+  <ol class="ailog" id="ailog" aria-live="polite">${S.log.map(l=>`<li>${esc(l)}</li>`).join('')}</ol>`
+  :`<label class="drop" id="drop" for="file"><input type="file" id="file" accept=".stl,.step,.stp,.3mf,.obj"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 15V4m0 0l-4 4m4-4l4 4M5 15v3a2 2 0 002 2h10a2 2 0 002-2v-3"/></svg><b>Drop a CAD file or choose one</b><span class="hint">STL previews here. STEP, 3MF and OBJ are accepted.</span></label>
+  ${S.uploadMsg?`<div class="msg ${S.useUpload?'ok':'warn'}">${esc(S.uploadMsg)}</div>`:''}
+  ${S.useUpload?`<div class="stats"><div><span class="lbl">Envelope</span><b>${S.upload.dims.map(x=>Math.round(x)).join('×')} mm</b></div><div><span class="lbl">Volume</span><b>${r2(S.upload.v)} cm³</b></div><div><span class="lbl">Triangles</span><b>${S.upload.tris.toLocaleString()}</b></div></div>`:''}`}
+  ${paramRows()}
+  ${navBtns(null,1)}`;
+}
+function pCheck(){const c=cur(),res=dfm(c,S.proc);S.lastChecks=res;const nf=res.filter(x=>x.st==='fail').length,nw=res.filter(x=>x.st==='warn').length;
+  return`<div class="ph"><h2>Manufacturability check</h2><p>Your part is checked against the limits of the process you pick. Change the process to re-check.</p></div>
+  <div class="seg" role="group" aria-label="Process">${Object.keys(PROCS).map(k=>`<button type="button" data-proc="${k}" aria-pressed="${k===S.proc}">${PROCS[k].short}</button>`).join('')}</div>
+  <div class="verdict ${nf?'bad':nw?'mid':'good'}"><span class="vicon">${nf?'!':nw?'!':'✓'}</span><div><b>${nf?`${nf} issue${nf>1?'s':''} to fix before ordering`:nw?'Ready to make, with notes':'Ready to make'}</b><p>${PROCS[S.proc].name} in ${PROCS[S.proc].mat}, tolerance ${PROCS[S.proc].tol}.</p></div></div>
+  <ul class="checks">${res.map((r,i)=>`<li class="ck"><span class="pill ${r.st}">${{pass:'Pass',warn:'Warn',fail:'Fix',info:'Note'}[r.st]}</span><div><b>${esc(r.t)}</b><p>${esc(r.d)}</p></div>${r.fix?`<button class="btn sm" type="button" data-fixi="${i}">${esc(fixLabel(r.fix,c))}</button>`:''}</li>`).join('')}</ul>
+  ${navBtns(0,2)}`}
+function pProtect(){const fresh=fpFresh();
+  return`<div class="ph"><h2>Protect your design</h2><p>The part's geometry is fingerprinted, timestamped and compared with every design on DesignShip, so copies can't be listed as originals.</p></div>
+  ${fresh?protectResult():`${S.fp?'<div class="msg warn">You changed the design after registering it. Scan again to register this version.</div>':''}<div><button class="btn primary" type="button" id="regBtn">Scan and register</button></div><div class="scan" id="scanBox" hidden><span class="hint" id="scanTxt"></span><div class="bar"><i id="scanBar"></i></div></div>`}
+  <p class="fine">Fingerprints are enforced on the DesignShip marketplace and give you a dated record of authorship. They are not a patent. For legal protection outside DesignShip, you would file a design or utility patent.</p>
+  ${navBtns(1,3)}`}
+function protectResult(){const f=S.fp,top=f.matches[0];let v;
+  if(S.remixOf&&byId(S.remixOf)){const o=byId(S.remixOf);v=['info','R',`Registered as a remix of “${o.name}”`,S.remixAuto?`This is a ${Math.round(top.sim*100)}% match. You can still order it for yourself. If you list it, it goes up as a remix and ${o.designer} earns 15% of your royalty.`:`${o.designer} allows remixes and earns 15% of your royalty on every sale.`]}
+  else if(top&&top.sim>=0.9&&top.it.mine)v=['info','✓',`Matches your own listing`,`This is ${Math.round(top.sim*100)}% the same as “${top.it.name}”. You can list it as a new version of your design.`];
+  else if(top&&top.sim>=0.75)v=['mid','~','Similar to an existing design, but distinct',`“${top.it.name}” is ${Math.round(top.sim*100)}% similar. That's normal for this kind of part, so you can list yours as an original.`];
+  else v=['good','✓','Original design','No listed design is close to yours. You can list it as an original and keep the full royalty.'];
+  return`<div class="fpcard"><span class="lbl">Fingerprint</span><b class="mono fpid">${f.id}</b><span class="hint">Registered ${esc(f.at)}</span></div>
+  <div class="verdict ${v[0]}"><span class="vicon">${v[1]}</span><div><b>${esc(v[2])}</b><p>${esc(v[3])}</p></div></div>
+  <h3>Closest designs on DesignShip</h3>
+  <ul class="matches">${f.matches.map(m=>`<li class="match"><span class="mthumb">${itemPic(m.it)}</span><div><b>${esc(m.it.name)}</b><span class="hint">${esc(m.it.designer)}</span><div class="bar"><i style="width:${Math.round(m.sim*100)}%;background:var(${m.sim>=0.9?'--bad':m.sim>=0.75?'--warn':'--accent'})"></i></div></div><span class="pct">${Math.round(m.sim*100)}%</span></li>`).join('')}</ul>
+  <div><button class="btn sm" type="button" id="regBtn">Scan again</button></div>`}
+async function runScan(instant){const c=cur(),key=fpKey(c);
+  if(S.remixAuto){S.remixOf=null;S.remixAuto=false}
+  if(!instant){const box=$('#scanBox'),btn=$('#regBtn');if(box){box.hidden=false;btn.disabled=true;$('#scanTxt').textContent=`Comparing with ${ITEMS.length} designs…`;requestAnimationFrame(()=>{$('#scanBar').style.width='100%'});await sleep(reduceMotion?50:950)}}
+  const matches=ITEMS.filter(it=>it.fp!==fpId(key)).map(it=>({it,sim:similarity(c,it)})).sort((a,b)=>b.sim-a.sim).slice(0,3);
+  const top=matches[0];if(!S.remixOf&&top&&top.sim>=0.9&&!top.it.mine){S.remixOf=top.it.id;S.remixAuto=true}
+  S.fp={key,id:fpId(key),at:new Date().toLocaleString('en-US',{timeZone:'America/Los_Angeles',dateStyle:'medium',timeStyle:'short'})+' PT',matches};
+  renderStudio();renderTitleBlock();toast(`Fingerprint ${S.fp.id} registered`)}
+
+function pMake(){const c=cur();
+  return`<div class="ph"><h2>Quote and order</h2><p>Prices update as you change quantity. Bigger batches unlock cheaper processes.</p></div>
+  <div class="qtyrow"><label for="qtyN">Quantity</label><input type="number" id="qtyN" min="1" max="10000" value="${S.qty}"><input type="range" id="qtyR" min="0" max="4" step="0.01" value="${Math.log10(S.qty)}" aria-label="Quantity slider"></div>
+  <div class="procs" id="procList" role="radiogroup" aria-label="Manufacturing process"></div>
+  <figure class="qfig"><figcaption>Cost per part by quantity</figcaption><div class="chart-wrap" id="qChart"></div><div class="legend" id="qLegend"></div><p class="hint" id="xover"></p></figure>
+  <div class="ziprow"><label for="zip">Ship to ZIP</label><input type="text" id="zip" inputmode="numeric" maxlength="5" value="${esc(S.zip)}"><span class="hint" id="mfrLine"></span></div>
+  <div id="sumBox"></div>
+  <div id="orderBox"></div>
+  ${navBtns(2,4)}`}
+function updateMake(){if(S.step!==3)return;const c=cur(),q=S.qty;
+  const rows=Object.keys(PROCS).map(k=>{const fits=c.maxDim<=PROCS[k].maxSize,Q=quote(k,c.v,c.maxDim,q),nf=fails(c,k);return{k,fits,Q,nf}});
+  const ok=rows.filter(r=>r.fits),best=ok.reduce((a,b)=>!a||b.Q.per<a.Q.per?b:a,null);
+  $('#procList').innerHTML=rows.map(r=>{const P=PROCS[r.k];return`<label class="proc ${r.k===S.proc?'sel':''} ${r.fits?'':'off'}"><input type="radio" name="proc" value="${r.k}" ${r.k===S.proc?'checked':''} ${r.fits?'':'disabled'}><span class="pn">${P.name}<small>${P.mat} · ${P.tol} · ${P.lead} day${P.lead>1?'s':''} to make</small></span><span class="pp">${r.fits?money(r.Q.per):'—'}<small class="hint">${r.fits?'per part':'too large'}</small></span>${best&&r.k===best.k?'<span class="tag">Lowest cost at this quantity</span>':''}${r.fits&&r.nf?`<span class="tag bad">${r.nf} check${r.nf>1?'s':''} to fix</span>`:''}</label>`}).join('');
+  $('#qChart').innerHTML=qChartSVG(c,q);
+  $('#qLegend').innerHTML=ok.map(r=>`<span><i style="background:var(${PCOL[r.k]})"></i>${PROCS[r.k].short}</span>`).join('');
+  let xo=null;if(c.maxDim<=PROCS.im.maxSize){for(let e=0;e<=4.0001;e+=0.02){const qq=Math.round(Math.pow(10,e));const im=quote('im',c.v,c.maxDim,qq).per;const oth=Math.min.apply(null,ok.filter(r=>r.k!=='im').map(r=>quote(r.k,c.v,c.maxDim,qq).per));if(im<oth){xo=qq;break}}}
+  const rnd=n=>n<100?n:n<1000?Math.round(n/10)*10:Math.round(n/50)*50;
+  $('#xover').textContent=xo?`Injection molding becomes the cheapest option at about ${rnd(xo).toLocaleString()} parts. When a listing sells that many, DesignShip suggests switching production.`:`${best?PROCS[best.k].name:'This process'} stays cheapest at every quantity shown.`;
+  const m=pickMfr(S.proc,S.zip),Q=quote(S.proc,c.v,c.maxDim,q),mass=c.v*PROCS[S.proc].dens*q,ship=m.ship+(mass>2000?8:0);
+  $('#mfrLine').textContent=/^\d{5}$/.test(S.zip)?`Made by ${m.name}, ${m.city}`:'Enter a 5-digit ZIP';
+  const eta=addDays(new Date(),PROCS[S.proc].lead+m.shipDays),nf=fails(c,S.proc),fits=c.maxDim<=PROCS[S.proc].maxSize;
+  $('#sumBox').innerHTML=`<div class="sum"><table><tbody>
+    <tr><td>Parts (${q.toLocaleString()} × ${money(Q.unit)})</td><td>${money(Q.unit*q)}</td></tr>
+    ${Q.setup?`<tr><td>${S.proc==='im'?'Mold tooling (one time)':'Machine setup'}</td><td>${money(Q.setup)}</td></tr>`:''}
+    <tr><td>Shipping from ${esc(m.city)}</td><td>${money(ship)}</td></tr>
+    <tr class="tot"><td>Total</td><td>${money(Q.total+ship)}</td></tr>
+    <tr><td>Estimated delivery</td><td>${fmtDate(eta)}</td></tr></tbody></table>
+    <div class="act">${nf||!fits?`<div class="msg bad">Fix ${nf} issue${nf>1?'s':''} in the Check step before ordering with ${PROCS[S.proc].short}.</div><div><button class="btn" type="button" data-go="1">Go to Check</button></div>`:`<button class="btn primary" type="button" id="orderBtn">Place demo order · ${money(Q.total+ship)}</button><span class="hint">Demo checkout. No payment is collected.</span>`}</div></div>`;
+  const o=S.lastOrder&&ORDERS.find(x=>x.id===S.lastOrder);$('#orderBox').innerHTML=o?orderCard(o,true):'';
+}
+function qChartSVG(c,qty){const W=540,H=220,ml=50,mr=14,mt=12,mb=28;const X=q=>ml+(Math.log10(q)/4)*(W-ml-mr);
+  const ks=Object.keys(PROCS).filter(k=>c.maxDim<=PROCS[k].maxSize);let lo=Infinity,hi=0;
+  const ser=ks.map(k=>{const pts=[];for(let i=0;i<=40;i++){const q=Math.pow(10,i/10),v=quote(k,c.v,c.maxDim,q).per;pts.push([q,v]);lo=Math.min(lo,v);hi=Math.max(hi,v)}return{k,pts}});
+  const y0=Math.floor(Math.log10(Math.max(0.1,lo))),y1=Math.max(y0+1,Math.ceil(Math.log10(hi)));const Y=v=>mt+(1-(Math.log10(v)-y0)/(y1-y0))*(H-mt-mb);
+  let g='';for(let e=y0;e<=y1;e++){const y=Y(Math.pow(10,e)).toFixed(1),v=Math.pow(10,e);g+=`<line x1="${ml}" x2="${W-mr}" y1="${y}" y2="${y}" stroke="var(--line)" stroke-width="1"/><text x="${ml-8}" y="${+y+4}" text-anchor="end" font-size="11" fill="var(--muted)" font-family="IBM Plex Mono,monospace">$${v>=1000?v/1000+'k':v}</text>`}
+  [1,10,100,1000,10000].forEach((q,i)=>{g+=`<text x="${X(q).toFixed(1)}" y="${H-8}" text-anchor="${i===0?'start':i===4?'end':'middle'}" font-size="11" fill="var(--muted)" font-family="IBM Plex Mono,monospace">${q>=1000?q/1000+'k':q}</text>`});
+  const lines=ser.map(s=>`<path d="M${s.pts.map(([q,v])=>X(q).toFixed(1)+','+Y(v).toFixed(1)).join('L')}" fill="none" stroke="var(${PCOL[s.k]})" stroke-width="${s.k===S.proc?3:1.6}" stroke-linejoin="round" opacity="${s.k===S.proc?1:.7}"/>`).join('');
+  const xq=X(qty).toFixed(1);let mk=`<line x1="${xq}" x2="${xq}" y1="${mt}" y2="${H-mb}" stroke="var(--ink)" stroke-dasharray="3 3" stroke-width="1"/>`;
+  if(ks.includes(S.proc)){const v=quote(S.proc,c.v,c.maxDim,qty).per;mk+=`<circle cx="${xq}" cy="${Y(v).toFixed(1)}" r="5" fill="var(${PCOL[S.proc]})" stroke="var(--panel)" stroke-width="2"/>`}
+  return`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Cost per part for each process from 1 to 10,000 parts, log scale">${g}${lines}${mk}<text x="${W-mr}" y="${mt+10}" text-anchor="end" font-size="11" fill="var(--muted)" font-family="IBM Plex Sans,sans-serif">quantity (log scale)</text></svg>`}
+function orderCard(o,showAdv){const st=Math.min(o.stage,5);const it=byId(o.itemId);return`<div class="order"><div class="order-h"><b>${esc(o.name)}</b><span class="mono hint">${o.id}</span></div>
+  <span class="hint">${o.qty.toLocaleString()} × ${PROCS[o.proc].short} · ${esc(o.mfr)}, ${esc(o.city)} · ${money(o.total)}${o.preorder?' · preorder':''}</span>
+  <ol class="tl">${STAGES.map((s,i)=>`<li class="${i<st?'done':''} ${i===st?'now':''}">${o.preorder&&i===0&&st===0?'Waiting for preorders':s}</li>`).join('')}</ol>
+  <div class="order-h"><span class="hint">${st>=5?'Delivered':`Estimated delivery ${fmtDate(o.eta)}`}</span>${showAdv&&st<5&&!(o.preorder&&it&&it.preorder)?`<button class="btn sm" type="button" data-adv="${o.id}">Advance status (demo)</button>`:''}</div></div>`}
+function placeOrder(){const c=cur(),q=S.qty,Q=quote(S.proc,c.v,c.maxDim,q),m=pickMfr(S.proc,S.zip),mass=c.v*PROCS[S.proc].dens*q,ship=m.ship+(mass>2000?8:0);
+  const o={id:'DS-'+(++SEQ),name:c.type==='upload'?c.name:titleFor(c),type:c.type,params:c.params?clone(c.params):null,proc:S.proc,qty:q,parts:Q.total,ship,total:Q.total+ship,mfr:m.name,city:m.city,stage:0,placed:new Date().toISOString(),eta:addDays(new Date(),PROCS[S.proc].lead+m.shipDays).toISOString(),source:'studio'};
+  ORDERS.unshift(o);S.lastOrder=o.id;save();renderStepbar();updateMake();toast(`Order ${o.id} placed with ${m.name}`)}
+
+function pList(){const c=cur();if(!S.listing||S.listing.key!==fpKey(c)){const L={key:fpKey(c),title:c.type==='upload'?c.name:titleFor(c),cat:c.type==='upload'?'Home repair':catFor(c.type),custom:{},remix:true,pre:false,need:500};const pseudo=listPseudo(L);L.price=Math.ceil(marketCost(pseudo)*1.7+3);S.listing=L}
+  const L=S.listing,fresh=fpFresh(),orig=S.remixOf&&byId(S.remixOf);
+  if(S.listedId&&byId(S.listedId))return`<div class="ph"><h2>Listed on the marketplace</h2><p>“${esc(byId(S.listedId).name)}” is live. Buyers can order it now, and you earn ${money(designerShare(byId(S.listedId)))} on every part.</p></div><div class="verdict good"><span class="vicon">✓</span><div><b>Your listing is live</b><p>Track sales and royalties on your dashboard.</p></div></div><div class="navbtns"><a class="btn" href="#dashboard">Open dashboard</a><a class="btn primary" href="#market">View in marketplace</a></div><div><button class="btn ghost sm" type="button" id="newDesign">Start a new design</button></div>`;
+  return`<div class="ph"><h2>List it on the marketplace</h2><p>Set your price. Partner shops make each order, and you get a royalty on every part sold.</p></div>
+  ${fresh?'':`<div class="msg warn">Register a fingerprint first so your design is protected when it goes public.</div><div><button class="btn" type="button" id="regInstant">Register fingerprint now</button></div>`}
+  ${orig?`<div class="verdict info"><span class="vicon">R</span><div><b>Listing as a remix of “${esc(orig.name)}”</b><p>${esc(orig.designer)} earns 15% of your royalty.</p></div></div>`:''}
+  <div class="form">
+    <div class="field"><label for="lt">Listing title</label><input type="text" id="lt" value="${esc(L.title)}"></div>
+    <div class="field"><label for="lc">Category</label><select id="lc">${CATS.slice(1).map(x=>`<option ${x===L.cat?'selected':''}>${x}</option>`).join('')}</select></div>
+    <div class="field"><label for="lp">Price per part</label><div class="money-in"><span>$</span><input type="number" id="lp" min="1" step="0.5" value="${L.price}"></div></div>
+    ${c.type!=='upload'?`<fieldset><legend>Let buyers customize</legend><span class="hint">Buyers can adjust these within ±25%. You still earn the royalty.</span>${TYPES[c.type].params.map(d=>`<label class="chk"><input type="checkbox" data-lcustom="${d.k}" ${L.custom[d.k]?'checked':''}><span>${d.label} <small>${rangeText(c.type,d.k,c.params[d.k])}</small></span></label>`).join('')}</fieldset>`:''}
+    <label class="chk"><input type="checkbox" id="lr" ${L.remix?'checked':''}><span>Allow remixes. You earn 15% of each remix's royalty.</span></label>
+    <label class="chk"><input type="checkbox" id="lpre" ${L.pre?'checked':''}><span>Sell as a preorder. Production starts once enough people order, which lowers the cost per part.</span></label>
+    <div class="field" id="preBox" ${L.pre?'':'hidden'}><label for="lneed">Preorders needed</label><input type="number" id="lneed" min="10" max="10000" step="10" value="${L.need}"></div>
+  </div>
+  <div id="lBreak"></div>
+  <div class="navbtns"><button class="btn" type="button" data-go="3">← Make</button><button class="btn primary" type="button" id="publishBtn">Publish listing</button></div>`}
+function rangeText(t,k,v){const d=pdef(t,k),lo=clamp(v*0.75,d.min,d.max),hi=clamp(v*1.25,d.min,d.max);return d.step>=1?`${Math.round(lo)}–${Math.round(hi)}`:`${r1(lo)}–${r1(hi)} mm`}
+function listPseudo(L){const c=cur();return{type:c.type,params:c.params,proc:S.proc,monthly:0,preorder:L.pre?{have:0,need:L.need}:null,metrics:c.type==='upload'?{v:c.v,dims:c.dims,maxDim:c.maxDim}:null,remixOf:S.remixOf}}
+function updateListing(){if(S.step!==4||!$('#lBreak'))return;const L=S.listing,ps=listPseudo(L),cost=marketCost(ps),fee=L.price*FEE,roy=L.price-fee-cost,orig=S.remixOf&&byId(S.remixOf);
+  const parts=[[cost,'--c2',`Manufacturing (${PROCS[S.proc].short}${L.pre?`, batch of ${L.need}`:S.proc==='cnc'?', batch of 10':S.proc==='im'?', batch of 250':''})`],[fee,'--line-strong','DesignShip (12%)']];
+  if(roy>0){if(orig){parts.push([roy*(1-REMIX),'--c1','Your royalty']);parts.push([roy*REMIX,'--c4',`${orig.designer} (remix share)`])}else parts.push([roy,'--c1','Your royalty'])}
+  $('#lBreak').innerHTML=`<h3 style="margin-bottom:10px">Per part sold at ${money(L.price)}</h3>${splitBar(parts)}${roy<=0?`<div class="msg bad" style="margin-top:10px">Raise the price above ${money(Math.ceil((cost/(1-FEE))*2)/2+0.5)} so you earn a royalty.</div>`:''}`;
+  const pb=$('#publishBtn');if(pb)pb.disabled=roy<=0||!L.title.trim();}
+function publish(){const c=cur(),L=S.listing;if(!fpFresh())runScanSync();
+  const keys=Object.keys(L.custom).filter(k=>L.custom[k]);
+  const it={id:'u'+Date.now(),name:L.title.trim(),designer:'You',mine:true,type:c.type,params:c.params?clone(c.params):null,proc:S.proc,price:+L.price,cat:L.cat,likes:0,sold:0,monthly:0,custom:keys,remix:L.remix,remixOf:S.remixOf||null,preorder:L.pre?{have:0,need:L.need}:null,created:new Date().toISOString().slice(0,10),fp:S.fp.id,isNew:true};
+  if(c.type==='upload'){it.metrics={v:c.v,dims:c.dims,maxDim:c.maxDim};it.thumb=thumbURL('upload',null,S.proc,S.upload.geo,320,240)}
+  ITEMS.unshift(it);S.listedId=it.id;save();MK.hl=it.id;toast('Listed. Buyers can order it now.');location.hash='#market'}
+function runScanSync(){const c=cur(),key=fpKey(c);const matches=ITEMS.map(it=>({it,sim:similarity(c,it)})).sort((a,b)=>b.sim-a.sim).slice(0,3);const top=matches[0];if(!S.remixOf&&top&&top.sim>=0.9&&!top.it.mine){S.remixOf=top.it.id;S.remixAuto=true}S.fp={key,id:fpId(key),at:new Date().toLocaleString('en-US',{timeZone:'America/Los_Angeles',dateStyle:'medium',timeStyle:'short'})+' PT',matches}}
+
+async function generate(){if(S.busy)return;const txt=($('#prompt')||{}).value||S.prompt;S.prompt=txt;if(!txt.trim()){toast('Describe the part first');return}
+  const r=parsePrompt(txt);S.busy=true;S.log=['Reading your request…'];S.useUpload=false;if(S.remixOf&&!S.remixAuto){}else{S.remixOf=null;S.remixAuto=false}S.listedId=null;renderPanel();
+  for(const n of r.notes){await sleep(reduceMotion?0:240);S.log.push(n);const l=$('#ailog');if(l)l.insertAdjacentHTML('beforeend',`<li>${esc(n)}</li>`)}
+  S.type=r.type;S.params=r.params;if(r.proc)S.proc=r.proc;S.busy=false;updateModel();renderStudio();}
+function loadExample(i){S.mode='ai';S.prompt=EX[i].text;S.remixOf=null;S.remixAuto=false;S.step=0;if(location.hash!=='#studio')location.hash='#studio';else renderStudio();setTimeout(generate,60)}
+function meshVolume(geo){const pos=geo.attributes.position,idx=geo.index;let v=0;const a=new THREE.Vector3(),b=new THREE.Vector3(),c=new THREE.Vector3();const n=idx?idx.count:pos.count;for(let i=0;i<n;i+=3){const i0=idx?idx.getX(i):i,i1=idx?idx.getX(i+1):i+1,i2=idx?idx.getX(i+2):i+2;a.fromBufferAttribute(pos,i0);b.fromBufferAttribute(pos,i1);c.fromBufferAttribute(pos,i2);v+=a.dot(b.cross(c))/6}return Math.abs(v)}
+async function onFile(f){if(!f)return;const ext=(f.name.split('.').pop()||'').toLowerCase();
+  if(ext==='stl'&&HAS3D&&THREE.STLLoader){try{const geo=new THREE.STLLoader().parse(await f.arrayBuffer());geo.computeBoundingBox();const bb=geo.boundingBox,dims=[bb.max.x-bb.min.x,bb.max.y-bb.min.y,bb.max.z-bb.min.z];
+      if(!dims.every(isFinite)||Math.max.apply(null,dims)<=0)throw new Error('empty');
+      S.upload={name:f.name,geo,dims,maxDim:Math.max.apply(null,dims),v:meshVolume(geo)/1000,tris:Math.round((geo.index?geo.index.count:geo.attributes.position.count)/3)};S.useUpload=true;S.remixOf=null;S.remixAuto=false;S.listedId=null;S.uploadMsg=`${f.name} imported. Units read as millimeters.`;updateModel();renderStudio();toast('STL imported');return}
+    catch(e){S.uploadMsg=`${f.name} could not be read as an STL file. Check that it exported correctly and try again.`;renderPanel();return}}
+  S.uploadMsg=ext==='stl'?'This browser cannot show 3D previews, so the file could not be opened here.':`${f.name} received. In this demo only STL files preview in the browser. The full product converts STEP, 3MF and OBJ files automatically.`;renderPanel()}
+
+/* studio events */
+document.addEventListener('click',e=>{const b=e.target.closest('button,[data-try]');if(!b)return;
+  if(b.dataset.try!=null){loadExample(+b.dataset.try);return}
+  if(b.dataset.step!=null){S.step=+b.dataset.step;renderStudio();return}
+  if(b.dataset.go!=null&&b.closest('#panel')){S.step=+b.dataset.go;renderStudio();window.scrollTo({top:0,behavior:'smooth'});return}
+});
+$('#panel').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.mode){S.mode=b.dataset.mode;if(S.mode==='ai'&&S.useUpload){S.useUpload=false;updateModel()}renderStudio();return}
+  if(b.dataset.ex!=null){S.prompt=EX[+b.dataset.ex].text;const t=$('#prompt');if(t)t.value=S.prompt;generate();return}
+  if(b.id==='genBtn'){generate();return}
+  if(b.dataset.proc){S.proc=b.dataset.proc;updateModel();renderStudio();return}
+  if(b.dataset.fixi!=null){const r=S.lastChecks[+b.dataset.fixi];if(!r||!r.fix)return;const f=r.fix;if(f.proc){S.proc=f.proc;toast(`Switched to ${PROCS[f.proc].name}`)}else{const d=pdef(S.type,f.k);S.params[f.k]=clamp(f.v,d.min,d.max);toast(`${d.label} set to ${fmtv(S.params[f.k],d)}`)}updateModel();renderStudio();return}
+  if(b.id==='regBtn'){runScan(false);return}
+  if(b.id==='regInstant'){runScanSync();renderStudio();renderTitleBlock();toast(`Fingerprint ${S.fp.id} registered`);return}
+  if(b.id==='orderBtn'){placeOrder();return}
+  if(b.dataset.adv){advanceOrder(b.dataset.adv);updateMake();return}
+  if(b.id==='publishBtn'){publish();return}
+  if(b.id==='newDesign'){S.listedId=null;S.lastOrder=null;S.fp=null;S.remixOf=null;S.step=0;S.log=[];renderStudio();return}
+});
+$('#panel').addEventListener('input',e=>{const el=e.target;
+  if(el.dataset.k&&S.step===0){const d=pdef(S.type,el.dataset.k);let v=parseFloat(el.value);if(!isFinite(v))return;v=clamp(v,d.min,d.max);S.params[d.k]=v;const other=el.type==='range'?$('#n-'+d.k):$('#p-'+d.k);if(other)other.value=el.type==='range'?r2(v):v;updateModel();renderStepbar();return}
+  if(el.id==='prompt'){S.prompt=el.value;return}
+  if(el.id==='qtyN'){const v=parseInt(el.value,10);if(!isFinite(v)||v<1)return;S.qty=clamp(v,1,10000);$('#qtyR').value=Math.log10(S.qty);updateMake();return}
+  if(el.id==='qtyR'){S.qty=Math.max(1,Math.round(Math.pow(10,+el.value)));$('#qtyN').value=S.qty;updateMake();return}
+  if(el.id==='zip'){S.zip=el.value.replace(/\D/g,'').slice(0,5);updateMake();return}
+  if(el.id==='lt'){S.listing.title=el.value;updateListing();return}
+  if(el.id==='lp'){const v=parseFloat(el.value);if(isFinite(v)&&v>0){S.listing.price=v;updateListing()}return}
+  if(el.id==='lneed'){const v=parseInt(el.value,10);if(isFinite(v)&&v>=10){S.listing.need=v;updateListing()}return}
+});
+$('#panel').addEventListener('change',e=>{const el=e.target;
+  if(el.name==='proc'){S.proc=el.value;updateModel();renderStepbar();updateMake();return}
+  if(el.id==='file'){onFile(el.files[0]);return}
+  if(el.id==='lc'){S.listing.cat=el.value;return}
+  if(el.dataset.lcustom){S.listing.custom[el.dataset.lcustom]=el.checked;return}
+  if(el.id==='lr'){S.listing.remix=el.checked;return}
+  if(el.id==='lpre'){S.listing.pre=el.checked;$('#preBox').hidden=!el.checked;updateListing();return}
+});
+['dragover','dragenter'].forEach(ev=>$('#panel').addEventListener(ev,e=>{const d=e.target.closest('#drop');if(d){e.preventDefault();d.classList.add('over')}}));
+$('#panel').addEventListener('dragleave',e=>{const d=e.target.closest('#drop');if(d)d.classList.remove('over')});
+$('#panel').addEventListener('drop',e=>{const d=e.target.closest('#drop');if(d){e.preventDefault();d.classList.remove('over');onFile(e.dataTransfer.files[0])}});
+$('#spinBtn').addEventListener('click',()=>{if(!vp)return;const on=vp.toggleSpin();$('#spinBtn').textContent=on?'Pause spin':'Resume spin'});
+
+/* ---------- orders ---------- */
+function advanceOrder(id){const o=ORDERS.find(x=>x.id===id);if(!o||o.stage>=5)return;o.stage++;save();toast(`${o.id}: ${STAGES[o.stage]}`)}
+
+/* ---------- MARKET ---------- */
+const MK={q:'',cat:'All',sort:'popular',hl:null};
+function renderMarket(){
+  $('#mcats').innerHTML=CATS.map(c=>`<button class="chip" type="button" data-cat="${esc(c)}" aria-pressed="${c===MK.cat}">${esc(c)}</button>`).join('');
+  const q=MK.q.trim().toLowerCase();
+  let list=ITEMS.filter(i=>(MK.cat==='All'||i.cat===MK.cat)&&(!q||[i.name,i.designer,i.cat,i.type==='upload'?'':TYPES[i.type].name].join(' ').toLowerCase().includes(q)));
+  const sorters={popular:(a,b)=>(b.likes+b.sold/3+(b.isNew?1e5:0))-(a.likes+a.sold/3+(a.isNew?1e5:0)),new:(a,b)=>String(b.created).localeCompare(String(a.created)),low:(a,b)=>a.price-b.price,high:(a,b)=>b.price-a.price};
+  list.sort(sorters[MK.sort]);
+  $('#mgrid').innerHTML=list.length?list.map(cardHTML).join(''):`<div class="empty">No parts match “${esc(MK.q)}”. Try a size like 31.8 or a word like gear.</div>`;
+  if(MK.hl){const el=$(`.card[data-id="${MK.hl}"]`);if(el)setTimeout(()=>el.scrollIntoView({block:'center',behavior:reduceMotion?'auto':'smooth'}),80);setTimeout(()=>{MK.hl=null;const e2=$('.card.hl');if(e2)e2.classList.remove('hl')},4000)}
+}
+function cardHTML(i){const pre=i.preorder,orig=i.remixOf&&byId(i.remixOf);
+  return`<article class="card ${MK.hl===i.id?'hl':''}" data-id="${i.id}"><button class="card-hit" type="button" data-open="${i.id}" aria-label="View ${esc(i.name)}"></button>
+  <div class="thumb">${itemPic(i)}</div>
+  <div class="cb"><div class="badges">${i.mine?'<span class="badge acc">Yours</span>':''}${pre?'<span class="badge acc">Preorder</span>':''}${i.custom&&i.custom.length?'<span class="badge">Customizable</span>':''}${orig?'<span class="badge">Remix</span>':''}<span class="badge">${PROCS[i.proc].short}</span></div>
+  <h3>${esc(i.name)}</h3><p class="by">${esc(i.designer)}${orig?` · remix of ${esc(orig.designer)}`:''}</p>
+  ${pre?`<div class="prog"><div class="bar"><i style="width:${Math.min(100,pre.have/pre.need*100)}%"></i></div><span>${pre.have.toLocaleString()} of ${pre.need.toLocaleString()} preorders</span></div>`:`<p class="by">${i.sold.toLocaleString()} sold</p>`}
+  <div class="row"><span class="price">${money(i.price)}</span><button class="like" type="button" data-like="${i.id}" aria-pressed="${!!i.liked}" aria-label="Like ${esc(i.name)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.6-7 10-7 10z"/></svg><span>${i.likes}</span></button></div></div></article>`}
+$('#mq').addEventListener('input',e=>{MK.q=e.target.value;renderMarket()});
+$('#msort').addEventListener('change',e=>{MK.sort=e.target.value;renderMarket()});
+$('#mcats').addEventListener('click',e=>{const b=e.target.closest('[data-cat]');if(b){MK.cat=b.dataset.cat;renderMarket()}});
+$('#mgrid').addEventListener('click',e=>{const l=e.target.closest('[data-like]');if(l){const it=byId(l.dataset.like);it.liked=!it.liked;it.likes+=it.liked?1:-1;l.setAttribute('aria-pressed',it.liked);l.querySelector('span').textContent=it.likes;save();return}const o=e.target.closest('[data-open]');if(o)openItem(o.dataset.open)});
+
+/* modal */
+let M=null,lastFocus=null,imgT;
+function itemPrice(it,params){if(it.type==='upload')return it.price;const d=marketCost(it,params)-marketCost(it);return Math.max(it.price*0.7,Math.round((it.price+d*1.15)*2)/2)}
+function openItem(id){const it=byId(id);if(!it)return;M={id,params:it.params?clone(it.params):null,qty:1};lastFocus=document.activeElement;$('#modal').hidden=false;document.body.style.overflow='hidden';renderModal();$('#mImg').innerHTML=pic(it.thumb||(it.type==='upload'?null:thumbURL(it.type,M.params,it.proc,null,640,480)),it.type,it.name);setTimeout(()=>$('.modal .x').focus(),0)}
+function closeModal(){$('#modal').hidden=true;document.body.style.overflow='';M=null;if(lastFocus&&lastFocus.focus)lastFocus.focus()}
+function renderModal(){const it=byId(M.id),orig=it.remixOf&&byId(it.remixOf),I=itemInfo(it,M.params),P=PROCS[it.proc],m=pickMfr(it.proc,S.zip),pre=it.preorder;
+  const ranges=(it.custom||[]).filter(k=>it.params&&k in it.params);
+  $('#mBody').innerHTML=`<div><p class="eyebrow">${esc(it.cat)}</p><h2 id="mTitle" style="margin-top:8px">${esc(it.name)}</h2><p class="by" style="margin-top:6px">by ${esc(it.designer)}${orig?` · remix of “${esc(orig.name)}” by ${esc(orig.designer)}`:''}</p></div>
+  <p>${it.type==='upload'?'Uploaded design.':esc(TYPES[it.type].desc)}</p>
+  <dl class="spec"><dt>Process</dt><dd>${P.name}</dd><dt>Material</dt><dd>${P.mat}</dd><dt>Envelope</dt><dd>${I.dims.map(r1).join(' × ')} mm</dd><dt>Tolerance</dt><dd>${P.tol}</dd><dt>${pre?'Preorders':'Sold'}</dt><dd>${pre?`${pre.have.toLocaleString()} of ${pre.need.toLocaleString()}`:it.sold.toLocaleString()}</dd></dl>
+  ${ranges.length?`<div><h3>Customize</h3><p class="hint" style="margin-top:6px">The designer allows these ranges.</p><div class="params">${ranges.map(k=>{const d=pdef(it.type,k),base=it.params[k],lo=clamp(base*0.75,d.min,d.max),hi=clamp(base*1.25,d.min,d.max);return`<div class="prm"><label for="mp-${k}">${d.label}</label><span class="numw mono" id="mv-${k}">${fmtv(M.params[k],d)}</span><input type="range" id="mp-${k}" data-mk="${k}" min="${d.step>=1?Math.round(lo):r1(lo)}" max="${d.step>=1?Math.round(hi):r1(hi)}" step="${d.step}" value="${M.params[k]}"></div>`}).join('')}</div></div>`:''}
+  ${pre?`<div class="prog"><div class="bar"><i style="width:${Math.min(100,pre.have/pre.need*100)}%"></i></div><span>Production starts at ${pre.need.toLocaleString()} preorders. You're only charged when it does.</span></div>`:''}
+  <div class="buyrow"><label for="mQty">Qty</label><input type="number" id="mQty" min="1" max="500" value="${M.qty}"><button class="btn primary" type="button" id="mBuy"></button></div>
+  <p class="hint" id="mShip"></p>
+  <div><h3 style="margin-bottom:10px">Where your money goes, per part</h3><div id="mSplit"></div></div>
+  ${it.type==='upload'?'':it.remix?`<div><button class="btn" type="button" id="mRemix">Remix in design studio</button></div>`:'<p class="hint">The designer has not allowed remixes.</p>'}`;
+  updateModalPrice()}
+function updateModalPrice(){const it=byId(M.id),price=itemPrice(it,M.params),cost=marketCost(it,M.params),fee=price*FEE,roy=Math.max(0,price-fee-cost),orig=it.remixOf&&byId(it.remixOf),m=pickMfr(it.proc,S.zip);
+  $('#mBuy').textContent=`${it.preorder?'Join preorder':'Order'} · ${money(price*M.qty+(it.preorder?0:m.ship))}`;
+  $('#mShip').textContent=it.preorder?`Made by ${m.name} once funded. Shipping is added then.`:`Made by ${m.name}, ${m.city}. Includes ${money(m.ship)} shipping. Arrives about ${fmtDate(addDays(new Date(),PROCS[it.proc].lead+m.shipDays))}.`;
+  const parts=[[cost,'--c2','Partner shop'],[orig?roy*(1-REMIX):roy,'--c1',`Designer (${it.designer})`]];if(orig)parts.push([roy*REMIX,'--c4',`Original designer (${orig.designer})`]);parts.push([fee,'--line-strong','DesignShip (12%)']);
+  $('#mSplit').innerHTML=splitBar(parts)}
+function buyItem(){const it=byId(M.id),price=itemPrice(it,M.params),m=pickMfr(it.proc,S.zip),q=M.qty;
+  const o={id:'DS-'+(++SEQ),itemId:it.id,name:it.name,type:it.type,params:M.params?clone(M.params):null,proc:it.proc,qty:q,parts:price*q,ship:it.preorder?0:m.ship,total:price*q+(it.preorder?0:m.ship),mfr:m.name,city:m.city,stage:0,placed:new Date().toISOString(),eta:addDays(new Date(),PROCS[it.proc].lead+m.shipDays+(it.preorder?14:0)).toISOString(),source:'market',preorder:!!it.preorder};
+  ORDERS.unshift(o);it.sold+=q;it.sessSold=(it.sessSold||0)+q;
+  let msg=`Order ${o.id} placed. ${it.designer==='You'?'You':it.designer} earned ${money(designerShare(it,M.params,price)*q)}.`;
+  if(it.preorder){it.preorder.have+=q;if(it.preorder.have>=it.preorder.need){it.preorder=null;it.monthly=Math.max(it.monthly,120);msg=`Preorder goal reached. “${it.name}” goes into production.`}else msg=`You joined the preorder. ${it.preorder.have.toLocaleString()} of ${it.preorder.need.toLocaleString()} so far.`}
+  save();toast(msg);closeModal();renderMarket()}
+$('#modal').addEventListener('click',e=>{if(e.target===$('#modal')||e.target.closest('[data-close]')){closeModal();return}const b=e.target.closest('button');if(!b)return;
+  if(b.id==='mBuy'){buyItem();return}
+  if(b.id==='mRemix'){const it=byId(M.id);S.type=it.type;S.params=clone(M.params);S.proc=it.proc;S.remixOf=it.id;S.remixAuto=false;S.useUpload=false;S.mode='ai';S.log=[`Loaded “${it.name}” by ${it.designer}`,'Change any dimension to make it your own'];S.fp=null;S.listedId=null;S.lastOrder=null;S.step=0;closeModal();location.hash='#studio';toast(`Remixing. ${it.designer} earns 15% if you list it.`)}});
+$('#modal').addEventListener('input',e=>{const el=e.target;if(el.id==='mQty'){const v=parseInt(el.value,10);if(isFinite(v)&&v>0){M.qty=Math.min(500,v);updateModalPrice()}return}
+  if(el.dataset.mk){const it=byId(M.id),d=pdef(it.type,el.dataset.mk);M.params[d.k]=+el.value;$('#mv-'+d.k).textContent=fmtv(+el.value,d);updateModalPrice();clearTimeout(imgT);imgT=setTimeout(()=>{if(M)$('#mImg').innerHTML=pic(thumbURL(it.type,M.params,it.proc,null,640,480),it.type,it.name)},140)}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#modal').hidden)closeModal()});
+
+/* ---------- DASHBOARD ---------- */
+let DTAB='creator';
+const HIST=[['May',640],['Jun',790],['Jul',960],['Aug',1105],['Sep',1240]];
+function renderDash(){$$('[data-dtab]').forEach(b=>b.setAttribute('aria-selected',b.dataset.dtab===DTAB));
+  $('#dashSub').textContent=DTAB==='creator'?'Your designs, royalties and orders.':'What a partner shop sees: incoming DesignShip jobs and payouts.';
+  $('#dashBody').innerHTML=DTAB==='creator'?dashCreator():dashMfr()}
+function upgradeFor(it){if(it.type==='upload'||it.preorder||it.proc==='im'||it.proc==='cnc'||(it.monthly||0)<150)return null;const I=itemInfo(it);if(I.maxDim>PROCS.im.maxSize)return null;const batch=it.monthly*3,now=marketCost(it),im=quote('im',I.v,I.maxDim,batch).per;return im<now?{batch,save:now-im,im}:null}
+function dashCreator(){
+  const mine=ITEMS.filter(i=>i.mine),remixes=ITEMS.filter(i=>i.remixOf&&byId(i.remixOf)&&byId(i.remixOf).mine);
+  const rpu=i=>designerShare(i),share=i=>royaltyOf(i)*REMIX;
+  const life=mine.reduce((a,i)=>a+i.sold*rpu(i),0)+remixes.reduce((a,i)=>a+i.sold*share(i),0);
+  const month=mine.reduce((a,i)=>a+((i.monthly||0)+(i.sessSold||0))*rpu(i),0)+remixes.reduce((a,i)=>a+((i.monthly||0)+(i.sessSold||0))*share(i),0);
+  const units=mine.reduce((a,i)=>a+i.sold,0),remixLife=remixes.reduce((a,i)=>a+i.sold*share(i),0);
+  const bars=HIST.concat([['Oct',month]]);
+  return`<div class="kpis"><div class="kpi"><span>Royalties in October</span><b>${money(month)}</b><small>${month>HIST[4][1]?'+':''}${Math.round((month/HIST[4][1]-1)*100)}% vs September</small></div><div class="kpi"><span>Lifetime royalties</span><b>${money(life)}</b><small>Paid out monthly</small></div><div class="kpi"><span>Parts sold</span><b>${units.toLocaleString()}</b><small>Across ${mine.length} design${mine.length>1?'s':''}</small></div><div class="kpi"><span>From remixes</span><b>${money(remixLife)}</b><small>${remixes.length} remix${remixes.length===1?'':'es'} of your work</small></div></div>
+  <div class="dgrid"><div class="box"><div class="box-h"><h2>Monthly royalties</h2><span class="hint">2026</span></div>${barChart(bars)}</div>
+  <div class="box"><h2>Remixes of your designs</h2>${remixes.length?`<ul class="list-plain">${remixes.map(r=>`<li><span><b>${esc(r.name)}</b><br><span class="hint">${esc(r.designer)} · ${r.sold.toLocaleString()} sold</span></span><span class="mono">${money(r.sold*share(r))}</span></li>`).join('')}</ul>`:'<p class="hint">No remixes yet. Allow remixes on a listing to earn 15% of each one.</p>'}<p class="fine">You earn 15% of the royalty on every sale of a remix.</p></div></div>
+  <div class="box dash-sec"><div class="box-h"><h2>Your designs</h2><a class="btn sm" href="#studio">New design</a></div><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Design</th><th>Process</th><th class="n">Sold</th><th class="n">Royalty / part</th><th class="n">Earned</th><th>Status</th></tr></thead><tbody>
+  ${mine.map(i=>{const u=upgradeFor(i);return`<tr><td><div class="tcell"><span class="mthumb">${itemPic(i)}</span><span>${esc(i.name)}</span></div></td><td>${PROCS[i.proc].short}</td><td class="n">${i.sold.toLocaleString()}</td><td class="n">${money(rpu(i))}</td><td class="n">${money(i.sold*rpu(i))}</td><td>${i.preorder?`<span class="status pre">Preorder ${i.preorder.have}/${i.preorder.need}</span>`:u?`<div class="upg"><span>Selling ${i.monthly}/month. Molding saves ${money(u.save)} per part.</span><button class="btn sm primary" type="button" data-upgrade="${i.id}">Switch to molding</button></div>`:'<span class="status live">Live</span>'}</td></tr>`}).join('')}
+  </tbody></table></div></div>
+  <div class="dash-sec"><div class="box-h"><h2 style="font:700 18px/1.2 var(--display);font-stretch:110%">Your orders</h2><span class="hint">${ORDERS.length} order${ORDERS.length===1?'':'s'}</span></div><div class="orders">${ORDERS.map(o=>orderCard(o,true)).join('')}</div></div>`}
+function barChart(bars){const W=560,H=210,ml=46,mb=26,mt=14,mx=Math.max.apply(null,bars.map(b=>b[1])),top=Math.ceil(mx/500)*500||500,bw=(W-ml-10)/bars.length;const Y=v=>mt+(1-v/top)*(H-mt-mb);
+  let g='';for(let v=0;v<=top;v+=500){g+=`<line x1="${ml}" x2="${W-6}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--line)"/><text x="${ml-8}" y="${Y(v)+4}" text-anchor="end" font-size="11" fill="var(--muted)" font-family="IBM Plex Mono,monospace">$${v>=1000?(v/1000)+'k':v}</text>`}
+  bars.forEach((b,i)=>{const x=ml+i*bw+bw*0.2,w=bw*0.6,y=Y(b[1]),last=i===bars.length-1;g+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${(Y(0)-y).toFixed(1)}" rx="2" fill="var(--accent)" opacity="${last?1:.45}"/><text x="${(x+w/2).toFixed(1)}" y="${H-8}" text-anchor="middle" font-size="11" fill="var(--muted)" font-family="IBM Plex Sans,sans-serif">${b[0]}</text>${last?`<text x="${(x+w/2).toFixed(1)}" y="${(y-6).toFixed(1)}" text-anchor="middle" font-size="11.5" font-weight="600" fill="var(--ink)" font-family="IBM Plex Mono,monospace">${money(b[1])}</text>`:''}`});
+  return`<div class="chart-wrap"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Monthly royalties May to October">${g}</svg></div>`}
+function dashMfr(){
+  const mine=ORDERS.filter(o=>o.mfr==='Bayline Print Farm');
+  const jobs=JOBS.map(j=>{const it=byId(j.item)||ITEMS[0];const per=quote(j.proc,itemInfo(it).v,itemInfo(it).maxDim,j.qty).per;return{key:j.id,part:it.name,qty:j.qty,proc:j.proc,due:j.due,payout:per*j.qty*(1-PLAT),status:JSTAT[j.st],act:j.st<3?JACT[j.st]:null,kind:'job'}})
+    .concat(mine.map(o=>({key:o.id,part:o.name,qty:o.qty,proc:o.proc,due:fmtDate(addDays(o.eta,-2)),payout:(o.parts*(o.source==='market'?0.55:1))*(1-PLAT),status:STAGES[Math.min(o.stage,5)],act:o.stage<4?'Advance':null,kind:'order'})));
+  const active=jobs.filter(j=>!/Shipped|Delivered/.test(j.status)).length,base=58,util=Math.min(97,base+active*7),pay=jobs.reduce((a,j)=>a+j.payout,0);
+  return`<div class="kpis"><div class="kpi"><span>Printers busy this week</span><b>${util}%</b><small>${base}% from your own customers</small></div><div class="kpi"><span>DesignShip jobs</span><b>${jobs.length}</b><small>${active} in progress</small></div><div class="kpi"><span>Payout this week</span><b>${money(pay)}</b><small>After DesignShip's 10% fee</small></div><div class="kpi"><span>Sales cost</span><b>$0</b><small>Orders arrive already paid</small></div></div>
+  <div class="box dash-sec"><div class="box-h"><h2>Bayline Print Farm · San Jose, CA</h2><span class="hint">FDM and resin · 40 printers</span></div>
+  <div class="meter" role="img" aria-label="Printer capacity: ${base}% own customers, ${util-base}% DesignShip jobs"><i style="width:${base}%;background:var(--line-strong)"></i><i style="width:${util-base}%;background:var(--accent)"></i></div>
+  <div class="legend"><span><i style="background:var(--line-strong)"></i>Own customers</span><span><i style="background:var(--accent)"></i>DesignShip jobs filling idle time</span></div>
+  <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Job</th><th>Part</th><th class="n">Qty</th><th>Process</th><th>Due</th><th class="n">Payout</th><th>Status</th></tr></thead><tbody>
+  ${jobs.map(j=>`<tr><td class="mono">${j.key}</td><td>${esc(j.part)}</td><td class="n">${j.qty}</td><td>${PROCS[j.proc].short}</td><td>${esc(j.due)}</td><td class="n">${money(j.payout)}</td><td><div class="tcell"><span class="status ${/Shipped|Delivered/.test(j.status)?'live':''}">${j.status}</span>${j.act?`<button class="btn sm" type="button" data-${j.kind}="${j.key}">${j.act}</button>`:''}</div></td></tr>`).join('')}
+  </tbody></table></div><p class="fine">Orders from the Design studio that ship to West Coast ZIP codes and use FDM or resin are routed here. Advancing them updates the customer's order tracker.</p></div>`}
+$('#dashBody').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.upgrade){const it=byId(b.dataset.upgrade),before=designerShare(it);it.proc='im';save();toast(`“${it.name}” moves to injection molding. Royalty: ${money(before)} → ${money(designerShare(it))} per part.`);renderDash();return}
+  if(b.dataset.adv){advanceOrder(b.dataset.adv);renderDash();return}
+  if(b.dataset.job){const j=JOBS.find(x=>x.id===b.dataset.job);if(j&&j.st<3){j.st++;save();toast(`${j.id}: ${JSTAT[j.st]}`)}renderDash();return}
+  if(b.dataset.order){advanceOrder(b.dataset.order);renderDash();return}});
+$$('[data-dtab]').forEach(b=>b.addEventListener('click',()=>{DTAB=b.dataset.dtab;renderDash()}));
+
+/* ---------- global ---------- */
+$('#resetDemo').addEventListener('click',()=>{try{localStorage.removeItem(KEY)}catch(e){}resetData();S.lastOrder=null;S.listedId=null;S.fp=null;S.remixOf=null;MK.hl=null;route();toast('Demo reset to the starting example data')});
+$('#heroNext').addEventListener('click',()=>{heroIdx++;showHero()});
+function onTheme(){viewers.forEach(v=>v.regrid())}
+try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',onTheme)}catch(e){}
+new MutationObserver(onTheme).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+
+load();
+heroV=makeViewer($('#heroVp'),{controls:false});
+vp=makeViewer($('#vp'),{controls:true});
+if(!vp){$('#spinBtn').hidden=true;$('#hudHint').textContent='3D preview needs WebGL'}
+S.log=['Example loaded. Edit the prompt or pick another example.'];
+showHero();
+if(!reduceMotion)heroTimer=setInterval(()=>{if(!$('#v-home').hidden&&!document.hidden){heroIdx++;showHero()}},6000);
+updateModel();
+route();
+})();
+</script>
+
+</body>
+</html>
